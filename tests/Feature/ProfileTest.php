@@ -81,14 +81,17 @@ test('user dapat menghapus akun', function () {
 });
 
 test('user tidak dapat mengakses profil jika profil belum dibuat', function () {
+    //ARRANGE
     $user = User::factory()->create();
 
+    //ACT
     $response = $this
         ->actingAs($user)
         ->get(route('profile.edit'));
 
-    $response->assertStatus(302);
-    $response->assertSessionHasErrors(['profile' => 'Profil tidak ditemukan. Silakan hubungi admin.']);
+    //ASSERT
+    $response->assertOk();
+    $response->assertViewHas(['user', 'profile']);
 });
 
 test('foto profil dapat diperbarui', function () {

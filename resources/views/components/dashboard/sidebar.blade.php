@@ -17,6 +17,13 @@
             <i class="fas fa-user mr-3"></i>
             <span>Profile</span>
         </a>
+
+        <a href="{{ route('tahun-ajaran.index') }}"
+            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('tahun-ajaran.*') ? 'bg-blue-700' : '' }}">
+            <i class="fas fa-calendar-alt mr-3"></i>
+            <span>Tahun Ajaran</span>
+        </a>
+
         <a href="{{ route('settings.index') }}"
             class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}">
             <i class="fas fa-cog mr-3"></i>

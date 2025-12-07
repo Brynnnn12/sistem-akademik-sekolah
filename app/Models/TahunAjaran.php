@@ -16,4 +16,26 @@ class TahunAjaran extends Model
         'semester',
         'aktif',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'aktif' => 'boolean',
+        ];
+    }
+
+    public function getAktifLabelAttribute(): string
+    {
+        return $this->aktif ? 'Aktif' : 'Tidak Aktif';
+    }
+
+    public function scopeAktif($query)
+    {
+        return $query->where('aktif', true);
+    }
+
+    public function scopeGanjil($query)
+    {
+        return $query->where('semester', 'ganjil');
+    }
 }

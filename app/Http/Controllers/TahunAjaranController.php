@@ -2,65 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TahunAjaran;
 use App\Http\Requests\StoreTahunAjaranRequest;
 use App\Http\Requests\UpdateTahunAjaranRequest;
+use App\Models\TahunAjaran;
+use App\Services\TahunAjaranService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class TahunAjaranController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function __construct(
+        protected TahunAjaranService $tahunAjaranService
+    ) {
+        // Opsi Modern: Authorize Resource di Constructor
+        // Ini otomatis mapping method controller ke policy (viewAny, create, update, dll)
+        $this->authorizeResource(TahunAjaran::class, 'tahun_ajaran');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(Request $request): View
     {
-        //
+        // Service akan menangani logika search jika parameter ada
+        $tahunAjarans = $this->tahunAjaranService->getPaginatedTahunAjaran(
+            $request->input('search')
+        );
+
+        return view('dashboard.tahun-ajaran.index', compact('tahunAjarans'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreTahunAjaranRequest $request)
+    public function create(): View
     {
-        //
+        return view('dashboard.tahun-ajaran.create');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TahunAjaran $tahunAjaran)
+    public function store(StoreTahunAjaranRequest $request): RedirectResponse
     {
-        //
+        $this->tahunAjaranService->createTahunAjaran($request->validated());
+
+        return to_route('tahun-ajaran.index')
+            ->with('success', 'Tahun ajaran berhasil ditambahkan!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TahunAjaran $tahunAjaran)
+    public function show(TahunAjaran $tahunAjaran): View
     {
-        //
+        return view('dashboard.tahun-ajaran.show', compact('tahunAjaran'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTahunAjaranRequest $request, TahunAjaran $tahunAjaran)
+    public function edit(TahunAjaran $tahunAjaran): View
     {
-        //
+        return view('dashboard.tahun-ajaran.edit', compact('tahunAjaran'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TahunAjaran $tahunAjaran)
+    public function update(UpdateTahunAjaranRequest $request, TahunAjaran $tahunAjaran): RedirectResponse
     {
-        //
+        $this->tahunAjaranService->updateTahunAjaran($tahunAjaran, $request->validated());
+
+        return to_route('tahun-ajaran.index')
+            ->with('success', 'Tahun ajaran berhasil diperbarui!');
+    }
+
+    public function destroy(TahunAjaran $tahunAjaran): RedirectResponse
+    {
+        try {
+            $this->tahunAjaranService->deleteTahunAjaran($tahunAjaran);
+
+            return to_route('tahun-ajaran.index')
+                ->with('success', 'Tahun ajaran berhasil dihapus!');
+        } catch (\Exception $e) {
+            // Kita catch di sini karena Service melempar error spesifik (misal: Sedang Aktif)
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function setActive(TahunAjaran $tahunAjaran): RedirectResponse
+    {
+        $this->tahunAjaranService->setActiveTahunAjaran($tahunAjaran);
+
+        return back()->with('success', 'Tahun ajaran berhasil diaktifkan!');
     }
 }

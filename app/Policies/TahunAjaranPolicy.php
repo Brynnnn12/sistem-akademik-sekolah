@@ -13,7 +13,8 @@ class TahunAjaranPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+
+        return $user->hasAnyRole(['Admin', 'Guru', 'KepalaSekolah']);
     }
 
     /**
@@ -21,7 +22,7 @@ class TahunAjaranPolicy
      */
     public function view(User $user, TahunAjaran $tahunAjaran): bool
     {
-        return false;
+        return $user->hasAnyRole(['Admin', 'Guru', 'KepalaSekolah']);
     }
 
     /**
@@ -29,7 +30,7 @@ class TahunAjaranPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('Admin');
     }
 
     /**
@@ -37,7 +38,7 @@ class TahunAjaranPolicy
      */
     public function update(User $user, TahunAjaran $tahunAjaran): bool
     {
-        return false;
+        return $user->hasRole('Admin');
     }
 
     /**
@@ -45,7 +46,7 @@ class TahunAjaranPolicy
      */
     public function delete(User $user, TahunAjaran $tahunAjaran): bool
     {
-        return false;
+        return $user->hasRole('Admin');
     }
 
     /**

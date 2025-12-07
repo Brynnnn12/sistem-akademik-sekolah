@@ -6,9 +6,8 @@ use App\Models\User;
 use App\Models\Profile;
 use App\Repositories\ProfileRepository;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileService
@@ -17,49 +16,50 @@ class ProfileService
         protected ProfileRepository $profileRepository
     ) {}
 
-    public function getProfileForUser(User $user): ?Profile
+    public function getProfileForUser(User $user): Profile
     {
-        return $this->profileRepository->findByUserId($user->id);
+        // Best Practice: Pastikan profile selalu ada saat diedit.
+        // Jika belum ada, buat profile kosong.
+        return $this->profileRepository->findByUserId($user->id)
+            ?? $this->profileRepository->create([
+                'user_id' => $user->id,
+                'nip' => 'TEMP-' . $user->id, // Default temporary NIP
+                'nama' => 'Nama Belum Diisi',
+                'no_hp' => '000000000000',
+                'alamat' => 'Alamat belum diisi',
+                'jenis_kelamin' => 'laki-laki',
+                'photo' => null,
+            ]);
     }
 
     public function updateProfile(User $user, array $data): Profile
     {
-        $profile = $this->profileRepository->findByUserId($user->id);
+        return DB::transaction(function () use ($user, $data) {
+            $profile = $this->getProfileForUser($user);
 
-        if (!$profile) {
-            $profile = $this->profileRepository->create(['user_id' => $user->id]);
-        }
+            // Handle Photo
+            if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
+                $data['photo'] = $this->handlePhotoUpload($data['photo'], $profile->photo);
+            }
 
-        if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
-            $data['photo'] = $this->handlePhotoUpload($data['photo'], $profile->photo);
-        } else {
-            unset($data['photo']);
-        }
+            // Update User Email (Jika berubah)
+            if (isset($data['email']) && $data['email'] !== $user->email) {
+                $this->updateUserEmail($user, $data['email']);
+            }
 
-        $profileData = Arr::only($data, [
-            'nip',
-            'nama',
-            'no_hp',
-            'alamat',
-            'jenis_kelamin',
-            'photo'
-        ]);
+            // Update Profile Data
+            // Filter hanya field yang relevan untuk tabel profiles
+            // Tips: Gunakan $fillable di model untuk safety, tapi unset manual di sini juga oke
+            unset($data['email']);
 
-        $this->profileRepository->update($profile, $profileData);
-
-        if (isset($data['email']) && $data['email'] !== $user->email) {
-            $this->updateUserEmail($user, $data['email']);
-        }
-
-        return $profile->refresh();
+            return $this->profileRepository->update($profile, $data);
+        });
     }
 
-    public function updatePassword(User $user, string $currentPassword, string $newPassword): void
+    public function updatePassword(User $user, string $newPassword): void
     {
-        if (!Hash::check($currentPassword, $user->password)) {
-            throw new \Exception('Password lama salah.');
-        }
-
+        // Kita tidak perlu cek password lama lagi di sini,
+        // karena sudah divalidasi oleh FormRequest 'current_password'
         $user->update([
             'password' => Hash::make($newPassword)
         ]);
@@ -67,14 +67,21 @@ class ProfileService
 
     public function deleteAccount(User $user): void
     {
-        $profile = $this->getProfileForUser($user);
-        if ($profile && $profile->photo) {
-            Storage::disk('public')->delete($profile->photo);
-        }
+        DB::transaction(function () use ($user) {
+            $profile = $this->profileRepository->findByUserId($user->id);
 
-        Auth::logout();
+            if ($profile?->photo) {
+                Storage::disk('public')->delete($profile->photo);
+            }
 
-        $user->delete();
+            // Delete user otomatis men-delete profile (jika ada cascade di DB)
+            // Tapi kita lakukan manual lewat repo jika tidak ada cascade
+            if ($profile) {
+                $this->profileRepository->delete($profile);
+            }
+
+            $user->delete();
+        });
     }
 
     private function handlePhotoUpload(UploadedFile $file, ?string $oldPhoto): string
@@ -89,7 +96,7 @@ class ProfileService
     private function updateUserEmail(User $user, string $email): void
     {
         $user->email = $email;
-        $user->email_verified_at = null;
+        $user->email_verified_at = null; // Reset verifikasi jika email ganti
         $user->save();
     }
 }

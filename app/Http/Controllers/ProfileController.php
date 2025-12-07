@@ -2,62 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Services\ProfileService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    use AuthorizesRequests;
     public function __construct(
         protected ProfileService $profileService
     ) {}
 
     public function edit(Request $request): View
     {
-        $user = $request->user();
-        $profile = $this->profileService->getProfileForUser($user);
+        // Service akan menjamin profile selalu ada (firstOrCreate)
+        // Jadi tidak perlu throw error manual di sini
+        $profile = $this->profileService->getProfileForUser($request->user());
 
-        throw_if(!$profile, ValidationException::withMessages([
-            'profile' => 'Profil tidak ditemukan. Silakan hubungi admin.',
-        ]));
-
-        $this->authorize('update', $profile);
-
-        return view('profile.edit', compact('user', 'profile'));
+        return view('profile.edit', [
+            'user' => $request->user(),
+            'profile' => $profile,
+        ]);
     }
 
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = $request->user();
-
         try {
-            $this->profileService->updateProfile($user, $request->validated());
+            $this->profileService->updateProfile($request->user(), $request->validated());
 
-            return Redirect::route('profile.edit')
-                ->with('success', 'Profil berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return back('profile.edit')->with('success', 'Profil berhasil diperbarui!');
+        } catch (\Throwable $e) {
+            // Log error here if needed: Log::error($e);
+            return back()->withErrors(['error' => 'Gagal memperbarui profil.']);
         }
-    }
-
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $this->profileService->deleteAccount($request->user());
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/')->with('success', 'Akun berhasil dihapus!');
     }
 
     public function editPassword(): View
@@ -65,24 +45,22 @@ class ProfileController extends Controller
         return view('profile.edit-password');
     }
 
-    public function updatePassword(Request $request): RedirectResponse
+    public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'min:8', 'confirmed'],
-        ]);
+        // Tidak perlu try-catch untuk validasi password salah,
+        // karena sudah dihandle otomatis oleh UpdatePasswordRequest
+        $this->profileService->updatePassword($request->user(), $request->validated('password'));
 
-        try {
-            $this->profileService->updatePassword(
-                $request->user(),
-                $validated['current_password'],
-                $validated['password']
-            );
+        return to_route('password.edit')->with('success', 'Password berhasil diperbarui!');
+    }
 
-            return Redirect::route('password.edit')
-                ->with('success', 'Password berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return back()->withErrors(['current_password' => $e->getMessage()]);
-        }
+    public function destroy(DeleteAccountRequest $request): RedirectResponse
+    {
+        $this->profileService->deleteAccount($request->user());
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Akun berhasil dihapus!');
     }
 }
