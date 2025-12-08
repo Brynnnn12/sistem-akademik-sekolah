@@ -2,60 +2,96 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Kelas;
+use App\Models\Siswa;
+use App\Models\MataPelajaran;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     /**
      * Display the dashboard overview.
      */
-    public function index()
+    public function index(): View
     {
-        $siswasCount = \App\Models\Siswa::countSiswa();
-        $stats = [
-            'total_revenue' => 12500000,
-            'total_orders' => 258,
-            'new_customers' => 42,
-            'conversion_rate' => 24.8
+        // 1. Ambil Statistik Utama
+        $stats = $this->getMainStats();
+
+        // 2. Ambil Data Grafik (Dipisah ke method private biar rapi)
+        $chartSiswa = $this->getSiswaPerKelasChartData();
+        $chartMapel = $this->getMapelPerKelasChartData();
+
+        // 3. Ambil Data Tabel (Top 5 Kelas Terpadat)
+        $topKelas = $this->getTopKelasData();
+
+        return view('dashboard.main.index', compact('stats', 'chartSiswa', 'chartMapel', 'topKelas'));
+    }
+
+    private function getMainStats(): array
+    {
+        return [
+            [
+                'label' => 'Total Guru',
+                'value' => User::role('Guru')->count(),
+                'icon' => 'fas fa-chalkboard-teacher',
+                'color' => 'blue',
+            ],
+            [
+                'label' => 'Total Kelas',
+                'value' => Kelas::count(),
+                'icon' => 'fas fa-school',
+                'color' => 'green',
+            ],
+            [
+                'label' => 'Total Siswa',
+                'value' => Siswa::count(),
+                'icon' => 'fas fa-users',
+                'color' => 'purple',
+            ],
+            [
+                'label' => 'Mata Pelajaran',
+                'value' => MataPelajaran::count(),
+                'icon' => 'fas fa-book',
+                'color' => 'yellow',
+            ],
         ];
-
-        return view('dashboard.main.index', compact('stats', 'siswasCount'));
     }
 
-    /**
-     * Display the settings page.
-     */
-    public function settings()
+    private function getSiswaPerKelasChartData(): array
     {
-        return view('dashboard.settings.index');
+        $data = Kelas::withCount('siswas')
+            ->orderBy('tingkat_kelas')
+            ->orderBy('nama')
+            ->get();
+
+        return [
+            'labels' => $data->pluck('nama_lengkap')->toArray(),
+            'series' => $data->pluck('siswas_count')->toArray(),
+        ];
     }
 
-    /**
-     * Update settings.
-     */
-    public function updateSettings(Request $request)
+    private function getMapelPerKelasChartData(): array
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
-            'current_password' => 'nullable|current_password',
-            'new_password' => 'nullable|min:8|confirmed',
-        ]);
+        $data = Kelas::withCount(['penugasanMengajar as mapel_count' => function ($query) {
+            $query->selectRaw('count(distinct mata_pelajaran_id)');
+        }])
+            ->orderBy('tingkat_kelas')
+            ->orderBy('nama')
+            ->get();
 
-        $user = auth()->user();
+        return [
+            'labels' => $data->pluck('nama_lengkap')->toArray(),
+            'series' => $data->pluck('mapel_count')->toArray(),
+        ];
+    }
 
-        // Update profile
-        $user->name = $request->name;
-        $user->email = $request->email;
-
-        // Update password if provided
-        if ($request->filled('new_password')) {
-            $user->password = bcrypt($request->new_password);
-        }
-
-        $user->save();
-
-        return redirect()->route('settings.index')
-            ->with('success', 'Pengaturan berhasil diperbarui!');
+    private function getTopKelasData()
+    {
+        return Kelas::withCount('siswas')
+            ->with('waliKelas:id,name')
+            ->orderByDesc('siswas_count')
+            ->take(5)
+            ->get();
     }
 }

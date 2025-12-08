@@ -37,6 +37,11 @@ class Kelas extends Model
             ->withTimestamps();
     }
 
+    public function penugasanMengajar()
+    {
+        return $this->hasMany(PenugasanMengajar::class, 'kelas_id');
+    }
+
 
     // Scopes
     public function scopeByTingkat($query, $tingkat)
