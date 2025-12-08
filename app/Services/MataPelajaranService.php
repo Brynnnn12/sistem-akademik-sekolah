@@ -20,16 +20,16 @@ class MataPelajaranService
 
     public function create(array $data): MataPelajaran
     {
-        return DB::transaction(fn() => $this->repository->create($data));
+        return $this->repository->create($data);
     }
 
     public function update(MataPelajaran $mataPelajaran, array $data): bool
     {
-        return DB::transaction(fn() => $this->repository->update($mataPelajaran, $data));
+        return $this->repository->update($mataPelajaran, $data);
     }
 
     public function delete(MataPelajaran $mataPelajaran): bool
     {
-        return DB::transaction(fn() => $this->repository->delete($mataPelajaran));
+        return $this->repository->delete($mataPelajaran);
     }
 }

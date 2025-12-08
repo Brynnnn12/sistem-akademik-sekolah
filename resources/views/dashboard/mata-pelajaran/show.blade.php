@@ -14,40 +14,55 @@
             </div>
         </x-slot>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Nama -->
-            <div>
-                <x-ui.label>Nama Mata Pelajaran</x-ui.label>
-                <p class="mt-1 text-sm text-gray-900 font-medium">{{ $mataPelajaran->nama }}</p>
-            </div>
+        <div class="space-y-6">
+            <!-- Information Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Basic Information -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                        Informasi Dasar
+                    </h4>
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Nama Mata Pelajaran</dt>
+                            <dd class="text-sm text-gray-900 mt-1">{{ $mataPelajaran->nama }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Kode Mata Pelajaran</dt>
+                            <dd class="text-sm text-gray-900 mt-1">
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ $mataPelajaran->kode }}
+                                </span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">KKM</dt>
+                            <dd class="text-sm text-gray-900 mt-1">{{ $mataPelajaran->kkm }}</dd>
+                        </div>
+                    </dl>
+                </div>
 
-            <!-- Kode -->
-            <div>
-                <x-ui.label>Kode Mata Pelajaran</x-ui.label>
-                <p class="mt-1">
-                    <span
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {{ $mataPelajaran->kode }}
-                    </span>
-                </p>
-            </div>
-
-            <!-- KKM -->
-            <div>
-                <x-ui.label>KKM (Kriteria Ketuntasan Minimal)</x-ui.label>
-                <p class="mt-1 text-sm text-gray-900 font-medium">{{ $mataPelajaran->kkm }}</p>
-            </div>
-
-            <!-- Dibuat -->
-            <div>
-                <x-ui.label>Dibuat Pada</x-ui.label>
-                <p class="mt-1 text-sm text-gray-900">{{ $mataPelajaran->created_at->format('d M Y H:i') }}</p>
-            </div>
-
-            <!-- Diperbarui -->
-            <div>
-                <x-ui.label>Terakhir Diperbarui</x-ui.label>
-                <p class="mt-1 text-sm text-gray-900">{{ $mataPelajaran->updated_at->format('d M Y H:i') }}</p>
+                <!-- Timestamp Information -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-clock mr-2 text-green-600"></i>
+                        Informasi Waktu
+                    </h4>
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Dibuat Pada</dt>
+                            <dd class="text-sm text-gray-900 mt-1">{{ $mataPelajaran->created_at->format('d M Y H:i') }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Terakhir Diperbarui</dt>
+                            <dd class="text-sm text-gray-900 mt-1">{{ $mataPelajaran->updated_at->format('d M Y H:i') }}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
             </div>
         </div>
 

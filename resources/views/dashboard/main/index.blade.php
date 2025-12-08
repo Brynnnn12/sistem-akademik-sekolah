@@ -4,14 +4,11 @@
             <!-- Stat Card 1 -->
             <div class="bg-white rounded-xl shadow-sm p-6 flex items-center">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mr-4">
-                    <i class="fas fa-wallet text-xl"></i>
+                    <i class="fas fa-users text-xl"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500">Total Pendapatan</h3>
-                    <p class="text-2xl font-semibold text-gray-800">Rp 12.5JT</p>
-                    <p class="text-xs text-green-500 flex items-center">
-                        <i class="fas fa-arrow-up mr-1"></i> 12.3%
-                    </p>
+                    <h3 class="text-sm font-medium text-gray-500">Total Siswa</h3>
+                    <p class="text-2xl font-semibold text-gray-800">{{ $siswasCount }}</p>
                 </div>
             </div>
 

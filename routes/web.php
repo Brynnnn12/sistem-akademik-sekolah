@@ -51,6 +51,9 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
     // 4. Mata Pelajaran
     Route::resource('mata-pelajaran', \App\Http\Controllers\MataPelajaranController::class);
+
+    // 5. Siswa
+    Route::resource('siswa', \App\Http\Controllers\SiswaController::class);
 });
 
 require __DIR__ . '/auth.php';

@@ -11,7 +11,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Contoh data statistik - bisa diganti dengan data real
+        $siswasCount = \App\Models\Siswa::countSiswa();
         $stats = [
             'total_revenue' => 12500000,
             'total_orders' => 258,
@@ -19,7 +19,7 @@ class DashboardController extends Controller
             'conversion_rate' => 24.8
         ];
 
-        return view('dashboard.main.index', compact('stats'));
+        return view('dashboard.main.index', compact('stats', 'siswasCount'));
     }
 
     /**
