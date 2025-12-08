@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tahun_ajarans', function (Blueprint $table) {
+        Schema::create('kelas', function (Blueprint $table) {
             $table->id();
-            $table->string('nama', 9);
-            $table->enum('semester', ['ganjil', 'genap']);
-            $table->boolean('aktif')->default(false);
-            $table->timestamps();
+            $table->string('nama'); // "1A", "6B"
+            $table->integer('tingkat_kelas'); // 1 sampai 6
+            // Wali Kelas diambil dari pengguna (peran guru)
+            $table->foreignId('wali_kelas_id')->constrained('users')->cascadeOnDelete();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tahun_ajarans');
+        Schema::dropIfExists('kelas');
     }
 };

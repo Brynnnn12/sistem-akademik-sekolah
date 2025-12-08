@@ -23,8 +23,8 @@ class SiswaFactory extends Factory
             'nis' => $this->faker->unique()->numerify('##########'), // 10 digit NIS
             'nisn' => $this->faker->unique()->numerify('##########'), // 10 digit NISN
             'nama' => $jenisKelamin === 'L'
-                ? $this->faker->name('male')
-                : $this->faker->name('female'),
+                ? $this->faker->name('Laki-laki')
+                : $this->faker->name('Perempuan'),
             'jenis_kelamin' => $jenisKelamin,
             'tanggal_lahir' => $this->faker->dateTimeBetween('-18 years', '-6 years')->format('Y-m-d'),
             'alamat' => $this->faker->address(),

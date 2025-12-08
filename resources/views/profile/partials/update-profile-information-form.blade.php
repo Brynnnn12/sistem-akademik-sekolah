@@ -48,9 +48,52 @@
 
         <div>
             <x-form.input-label for="jenis_kelamin" :value="__('Jenis Kelamin')" />
+            {{-- Tom Select untuk Jenis Kelamin --}}
+            @push('styles')
+                <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+                <style>
+                    .ts-control {
+                        border-radius: 0.375rem;
+                        padding: 0.5rem 0.75rem;
+                        border-color: #d1d5db;
+                    }
+
+                    .ts-control:focus {
+                        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+                        border-color: #3b82f6;
+                    }
+
+                    .ts-dropdown {
+                        z-index: 60;
+                    }
+                </style>
+            @endpush
+
+            @push('scripts')
+                <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const selectEl = document.getElementById('jenis_kelamin');
+                        if (selectEl && !selectEl.tomselect) {
+                            new TomSelect(selectEl, {
+                                create: false,
+                                sortField: {
+                                    field: "text",
+                                    direction: "asc"
+                                },
+                                placeholder: "Pilih jenis kelamin...",
+                                plugins: ['clear_button'],
+                                dropdownParent: 'body'
+                            });
+                        }
+                    });
+                </script>
+            @endpush
+
             <select id="jenis_kelamin" name="jenis_kelamin"
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                <option value="">Pilih</option>
+                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                autocomplete="off">
+                <option value="">Pilih jenis kelamin...</option>
                 <option value="laki-laki"
                     {{ old('jenis_kelamin', $profile->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>Laki-laki
                 </option>

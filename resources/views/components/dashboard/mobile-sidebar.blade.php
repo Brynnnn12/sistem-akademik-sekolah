@@ -46,6 +46,19 @@
                                     <i class="fas fa-book mr-3 w-5 text-center"></i>
                                     <span>Mata Pelajaran</span>
                                 </a>
+
+                                <a href="{{ route('kelas.index') }}"
+                                    class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('kelas.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}"
+                                    @click="isSidebarOpen = false">
+                                    <i class="fas fa-chalkboard mr-3 w-5 text-center"></i>
+                                    <span>Kelas</span>
+                                </a>
+                                <a href="{{ route('penugasan-mengajar.index') }}"
+                                    class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('penugasan-mengajar.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}"
+                                    @click="isSidebarOpen = false">
+                                    <i class="fas fa-chalkboard-teacher mr-3 w-5 text-center"></i>
+                                    <span>Penugasan Mengajar</span>
+                                </a>
                             </div>
                         </div>
 

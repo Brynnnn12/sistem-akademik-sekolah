@@ -11,6 +11,8 @@ class Siswa extends Model
     /** @use HasFactory<\Database\Factories\SiswaFactory> */
     use HasFactory, SoftDeletes;
 
+    protected $table = 'siswas';
+
     protected $fillable = [
         'nis',
         'nisn',
@@ -32,25 +34,19 @@ class Siswa extends Model
     /* Relationships                                    */
     /* -------------------------------------------------------------------------- */
 
-    // public function kelasSiswa()
-    // {
-    //     return $this->hasMany(KelasSiswa::class);
-    // }
+    public function kelas()
+    {
+        return $this->belongsToMany(Kelas::class, 'kelas_siswas')
+            ->withPivot('tahun_ajaran_id')
+            ->withTimestamps();
+    }
 
-    // public function nilaiSiswa()
-    // {
-    //     return $this->hasMany(NilaiSiswa::class);
-    // }
-
-    // public function kehadiran()
-    // {
-    //     return $this->hasMany(Kehadiran::class);
-    // }
-
-    // public function nilaiAkhir()
-    // {
-    //     return $this->hasMany(NilaiAkhir::class);
-    // }
+    public function tahunAjaran()
+    {
+        return $this->belongsToMany(TahunAjaran::class, 'kelas_siswas')
+            ->withPivot('kelas_id')
+            ->withTimestamps();
+    }
 
     /* -------------------------------------------------------------------------- */
     /* Scopes                                    */

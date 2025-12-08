@@ -7,6 +7,7 @@
     <title>{{ $title ?? 'Dashboard' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @stack('styles')
 </head>
 
 <body class="bg-gray-100 font-sans h-screen overflow-hidden" x-data="{ isSidebarOpen: false, activeTab: '{{ $title ?? 'Dashboard' }}' }">
@@ -55,6 +56,7 @@
             background: rgba(255, 255, 255, 0.5);
         }
     </style>
+    @stack('scripts')
 </body>
 
 </html>

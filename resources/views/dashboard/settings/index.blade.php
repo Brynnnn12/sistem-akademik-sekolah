@@ -81,8 +81,53 @@
 
                     <div>
                         <label for="language" class="block text-sm font-medium text-gray-700 mb-2">Bahasa</label>
+
+                        {{-- Tom Select untuk Bahasa --}}
+                        @push('styles')
+                            <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css"
+                                rel="stylesheet">
+                            <style>
+                                .ts-control {
+                                    border-radius: 0.375rem;
+                                    padding: 0.5rem 0.75rem;
+                                    border-color: #d1d5db;
+                                }
+
+                                .ts-control:focus {
+                                    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+                                    border-color: #3b82f6;
+                                }
+
+                                .ts-dropdown {
+                                    z-index: 60;
+                                }
+                            </style>
+                        @endpush
+
+                        @push('scripts')
+                            <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const selectEl = document.getElementById('language');
+                                    if (selectEl && !selectEl.tomselect) {
+                                        new TomSelect(selectEl, {
+                                            create: false,
+                                            sortField: {
+                                                field: "text",
+                                                direction: "asc"
+                                            },
+                                            placeholder: "Pilih bahasa...",
+                                            plugins: ['clear_button'],
+                                            dropdownParent: 'body'
+                                        });
+                                    }
+                                });
+                            </script>
+                        @endpush
+
                         <select id="language" name="language"
-                            class="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            autocomplete="off">
                             <option value="id" selected>Indonesia</option>
                             <option value="en">English</option>
                             <option value="ja">日本語</option>

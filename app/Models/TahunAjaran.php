@@ -11,6 +11,8 @@ class TahunAjaran extends Model
     /** @use HasFactory<\Database\Factories\TahunAjaranFactory> */
     use HasFactory, SoftDeletes;
 
+    protected $table = 'tahun_ajarans';
+
     protected $fillable = [
         'nama',
         'semester',

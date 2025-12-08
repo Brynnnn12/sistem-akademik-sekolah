@@ -12,6 +12,6 @@ class MataPelajaranSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        \App\Models\MataPelajaran::factory()->count(10)->create();
     }
 }

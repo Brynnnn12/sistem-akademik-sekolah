@@ -54,6 +54,22 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
     // 5. Siswa
     Route::resource('siswa', \App\Http\Controllers\SiswaController::class);
+
+    // 6. Kelas
+    Route::get('kelas', [\App\Http\Controllers\KelasController::class, 'index'])->name('kelas.index');
+    Route::get('kelas/create', [\App\Http\Controllers\KelasController::class, 'create'])->name('kelas.create');
+    Route::post('kelas', [\App\Http\Controllers\KelasController::class, 'store'])->name('kelas.store');
+    Route::get('kelas/{kelas}', [\App\Http\Controllers\KelasController::class, 'show'])->name('kelas.show');
+    Route::get('kelas/{kelas}/edit', [\App\Http\Controllers\KelasController::class, 'edit'])->name('kelas.edit');
+    Route::match(['put', 'patch'], 'kelas/{kelas}', [\App\Http\Controllers\KelasController::class, 'update'])->name('kelas.update');
+    Route::delete('kelas/{kelas}', [\App\Http\Controllers\KelasController::class, 'destroy'])->name('kelas.destroy');
+
+    // Rombel (Plotting Siswa ke Kelas)
+    Route::post('kelas/{kelas}/siswa', [\App\Http\Controllers\KelasController::class, 'addSiswa'])->name('kelas.add-siswa');
+    Route::delete('kelas/{kelas}/siswa/{kelasSiswa}', [\App\Http\Controllers\KelasController::class, 'removeSiswa'])->name('kelas.remove-siswa');
+
+    // 7. Penugasan Mengajar
+    Route::resource('penugasan-mengajar', \App\Http\Controllers\PenugasanMengajarController::class);
 });
 
 require __DIR__ . '/auth.php';
