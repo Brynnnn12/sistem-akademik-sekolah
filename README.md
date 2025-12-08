@@ -53,7 +53,7 @@ erDiagram
     %% KEGIATAN MENGAJAR
     pengguna ||--o{ penugasan_mengajar : "Guru Mengajar"
     kelas ||--o{ penugasan_mengajar : "Kelas Diajar"
-    mata_pelajaran ||--o{ penugasan_mengajar : "Mapel Diajarkan"
+    mata_pelajarans ||--o{ penugasan_mengajar : "Mapel Diajarkan"
 
     %% PROSES PENILAIAN HARIAN
     penugasan_mengajar ||--o{ komponen_nilai : "Punya Kategori (UH/Tugas)"
@@ -62,7 +62,7 @@ erDiagram
 
     %% HASIL AKHIR (RAPOR)
     siswa ||--o{ nilai_akhir : "Punya Rapor"
-    mata_pelajaran ||--o{ nilai_akhir : "Nilai Mapel"
+    mata_pelajarans ||--o{ nilai_akhir : "Nilai Mapel"
 
     %% ABSENSI
     kelas ||--o{ kehadiran : "Lokasi Absen"
@@ -108,10 +108,13 @@ Schema::create('tahun_ajaran', function (Blueprint $table) {
     $table->timestamps();
 });
 
-// mata_pelajaran
-Schema::create('mata_pelajaran', function (Blueprint $table) {
+// mata_pelajarans
+Schema::create('mata_pelajarans', function (Blueprint $table) {
     $table->id();
-    $table->string('nama'); // Matematika, IPA
+    $table->string('nama');
+    $table->string('kode')->unique(); // MATH101, SCI201
+    $table->integer('kkm')->default(75); // Kriteria Ketuntasan Minimal
+    $table->softDeletes();
     $table->timestamps();
 });
 
@@ -124,7 +127,6 @@ Schema::create('siswa', function (Blueprint $table) {
     $table->enum('jenis_kelamin', ['L', 'P']);
     $table->date('tanggal_lahir');
     $table->text('alamat')->nullable();
-    $table->string('nama_orang_tua')->nullable();
     $table->timestamps();
 });
 
@@ -156,7 +158,7 @@ Schema::create('penugasan_mengajar', function (Blueprint $table) {
     $table->id();
     $table->foreignId('guru_id')->constrained('pengguna')->onDelete('cascade');
     $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
-    $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('cascade');
+    $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajarans')->onDelete('cascade');
     $table->foreignId('tahun_ajaran_id')->constrained('tahun_ajaran')->onDelete('cascade');
     $table->timestamps();
 });
@@ -203,7 +205,7 @@ Schema::create('nilai_siswa', function (Blueprint $table) {
 Schema::create('nilai_akhir', function (Blueprint $table) {
     $table->id();
     $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
-    $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('cascade');
+    $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajarans')->onDelete('cascade');
     $table->foreignId('tahun_ajaran_id')->constrained('tahun_ajaran')->onDelete('cascade');
 
     $table->float('nilai_akhir_angka'); // Nilai Akhir Angka
@@ -329,10 +331,8 @@ Kunjungi `http://localhost:8000` untuk mulai menggunakan sistem!
 -   [x] Testing lengkap untuk fitur profil
 -   [x] Clean Architecture (Controller → Service → Repository)
 -   [x] UI responsif dengan Tailwind CSS
-
-### 🚧 Dalam Pengembangan
-
--   [ ] Tahun Ajaran management
+-   [x] Tahun Ajaran management
+-   [x] Mata Pelajaran management
 -   [ ] Master data siswa
 -   [ ] Manajemen kelas & rombel
 -   [ ] Jadwal mengajar

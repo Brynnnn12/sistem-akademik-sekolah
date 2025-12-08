@@ -48,6 +48,9 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
         ->name('tahun-ajaran.set-active');
 
     Route::resource('tahun-ajaran', TahunAjaranController::class);
+
+    // 4. Mata Pelajaran
+    Route::resource('mata-pelajaran', \App\Http\Controllers\MataPelajaranController::class);
 });
 
 require __DIR__ . '/auth.php';

@@ -33,6 +33,13 @@
                             <span>Tahun Ajaran</span>
                         </a>
 
+                        <a href="{{ route('mata-pelajaran.index') }}"
+                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('mata-pelajaran.*') ? 'bg-blue-700' : '' }}"
+                            @click="isSidebarOpen = false">
+                            <i class="fas fa-book mr-3"></i>
+                            <span>Mata Pelajaran</span>
+                        </a>
+
                         <a href="{{ route('settings.index') }}"
                             class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}"
                             @click="isSidebarOpen = false">
