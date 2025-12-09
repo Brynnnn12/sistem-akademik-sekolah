@@ -47,6 +47,11 @@ class PenugasanMengajar extends Model
         return $this->belongsTo(TahunAjaran::class, 'tahun_ajaran_id');
     }
 
+    public function jadwalMengajars()
+    {
+        return $this->hasMany(JadwalMengajar::class);
+    }
+
     // Scopes
     public function scopeByGuru($query, $guruId)
     {

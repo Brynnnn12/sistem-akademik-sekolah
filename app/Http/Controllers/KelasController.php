@@ -80,6 +80,34 @@ class KelasController extends Controller
         // Get siswa yang sudah ada di kelas ini
         $siswaDiKelas = $this->rombelService->getSiswaByKelas($kelas->id, $tahunAjaranAktif?->id);
 
+        // Get attendance statistics for each student
+        $siswaDiKelas->each(function ($kelasSiswa) use ($kelas, $tahunAjaranAktif) {
+            $siswa = $kelasSiswa->siswa;
+
+            // Get attendance data for this student in this class and year
+            $attendanceStats = \App\Models\PresensiMapel::where('siswa_id', $siswa->id)
+                ->where('kelas_id', $kelas->id)
+                ->when($tahunAjaranAktif, function ($query) use ($tahunAjaranAktif) {
+                    $query->whereHas('mataPelajaran', function ($subQuery) use ($tahunAjaranAktif) {
+                        $subQuery->whereHas('penugasanMengajar', function ($penugasanQuery) use ($tahunAjaranAktif) {
+                            $penugasanQuery->where('tahun_ajaran_id', $tahunAjaranAktif->id);
+                        });
+                    });
+                })
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $siswa->attendance_stats = [
+                'hadir' => $attendanceStats['hadir'] ?? 0,
+                'sakit' => $attendanceStats['sakit'] ?? 0,
+                'izin' => $attendanceStats['izin'] ?? 0,
+                'alpha' => $attendanceStats['alpha'] ?? 0,
+                'total' => array_sum($attendanceStats),
+            ];
+        });
+
         // Get siswa yang tersedia untuk ditambahkan
         $siswaTersedia = $tahunAjaranAktif
             ? $this->rombelService->getSiswaAvailableForKelas($kelas->id, $tahunAjaranAktif->id)

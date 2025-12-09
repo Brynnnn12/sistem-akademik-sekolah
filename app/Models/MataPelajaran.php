@@ -70,4 +70,13 @@ class MataPelajaran extends Model
     {
         return $query->where('kkm', '>=', $value);
     }
+
+    /* -------------------------------------------------------------------------- */
+    /* Relationships                              */
+    /* -------------------------------------------------------------------------- */
+
+    public function penugasanMengajar()
+    {
+        return $this->hasMany(PenugasanMengajar::class);
+    }
 }

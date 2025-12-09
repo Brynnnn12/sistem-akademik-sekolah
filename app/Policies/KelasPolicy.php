@@ -13,7 +13,7 @@ class KelasPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['Admin', 'Guru', 'KepalaSekolah']);
+        return $user->hasAnyRole(['Admin',  'KepalaSekolah']);
     }
 
     /**
@@ -21,7 +21,17 @@ class KelasPolicy
      */
     public function view(User $user, Kelas $kelas): bool
     {
-        return $user->hasAnyRole(['Admin', 'Guru', 'KepalaSekolah']);
+        // Admin and kepala sekolah can view any kelas
+        if ($user->hasAnyRole(['Admin', 'KepalaSekolah'])) {
+            return true;
+        }
+
+        // Guru can view kelas where they are wali kelas
+        if ($user->hasRole('Guru')) {
+            return $kelas->wali_kelas_id === $user->id;
+        }
+
+        return false;
     }
 
     /**

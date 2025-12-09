@@ -20,6 +20,8 @@ class Siswa extends Model
         'jenis_kelamin',
         'tanggal_lahir',
         'alamat',
+        'status',
+        'tanggal_lulus',
     ];
 
     protected function casts(): array
@@ -27,6 +29,7 @@ class Siswa extends Model
         return [
             'tanggal_lahir' => 'date',
             'jenis_kelamin' => 'string',
+            'tanggal_lulus' => 'date',
         ];
     }
 

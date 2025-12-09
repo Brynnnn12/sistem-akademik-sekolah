@@ -30,7 +30,7 @@ class KelasSiswaRepository
             ->paginate($perPage);
     }
 
-    public function getByKelas(int $kelasId, int $tahunAjaranId = null): Collection
+    public function getByKelas(int $kelasId, int $tahunAjaranId): Collection
     {
         return $this->model
             ->with(['siswa', 'tahunAjaran'])
@@ -41,7 +41,7 @@ class KelasSiswaRepository
             ->get();
     }
 
-    public function getBySiswa(int $siswaId, int $tahunAjaranId = null): Collection
+    public function getBySiswa(int $siswaId, int $tahunAjaranId): Collection
     {
         return $this->model
             ->with(['kelas', 'tahunAjaran'])

@@ -72,42 +72,37 @@
                             onclick="showTahunAjaranModal{{ $tahunAjaran->id }}()">
                             View
                         </x-ui.button>
-                        <x-ui.button size="xs" variant="outline" icon="fas fa-edit"
-                            onclick="location.href='{{ route('tahun-ajaran.edit', $tahunAjaran) }}'">
-                            Edit
-                        </x-ui.button>
-                        @if (!$tahunAjaran->aktif)
-                            <x-ui.button size="xs" variant="danger" icon="fas fa-trash"
-                                onclick="sweetConfirm{{ $tahunAjaran->id }}()">
-                                Delete
+
+                        @can('update', $tahunAjaran)
+                            <x-ui.button size="xs" variant="outline" icon="fas fa-edit"
+                                onclick="location.href='{{ route('tahun-ajaran.edit', $tahunAjaran) }}'">
+                                Edit
                             </x-ui.button>
-                        @else
-                            <span class="text-xs text-gray-400 italic">Aktif</span>
-                        @endif
-                        @if (!$tahunAjaran->aktif)
-                            <x-ui.button size="xs" variant="success" icon="fas fa-check"
-                                onclick="setActiveConfirm{{ $tahunAjaran->id }}()">
-                                Aktifkan
-                            </x-ui.button>
-                        @endif
+                        @endcan
+
+                        @can('delete', $tahunAjaran)
+                            @if (!$tahunAjaran->aktif)
+                                <x-ui.button size="xs" variant="danger" icon="fas fa-trash"
+                                    onclick="confirmDelete('{{ route('tahun-ajaran.destroy', $tahunAjaran) }}', '{{ $tahunAjaran->nama }}')">
+                                    Delete
+                                </x-ui.button>
+                            @else
+                                <span class="text-xs text-gray-400 italic">Aktif</span>
+                            @endif
+                        @endcan
+
+                        @can('update', $tahunAjaran)
+                            @if (!$tahunAjaran->aktif)
+                                <x-ui.button size="xs" variant="success" icon="fas fa-check"
+                                    onclick="confirmSetActive('{{ route('tahun-ajaran.set-active', $tahunAjaran) }}', '{{ $tahunAjaran->nama }}')">
+                                    Aktifkan
+                                </x-ui.button>
+                            @endif
+                        @endcan
                     </td>
                 </tr>
 
-                <!-- Generate sweet-confirm for delete -->
-                @if (!$tahunAjaran->aktif)
-                    <x-sweet.sweet-confirm title="Hapus Tahun Ajaran?"
-                        text="Apakah Anda yakin ingin menghapus tahun ajaran {{ $tahunAjaran->nama }}? Aksi ini tidak bisa dibatalkan!"
-                        confirm-text="Ya, hapus!" cancel-text="Batal" icon="warning"
-                        action="{{ route('tahun-ajaran.destroy', $tahunAjaran) }}" method="DELETE" />
-                @endif
-
-                <!-- Generate sweet-confirm for set active -->
-                @if (!$tahunAjaran->aktif)
-                    <x-sweet.sweet-confirm title="Aktifkan Tahun Ajaran?"
-                        text="Apakah Anda yakin ingin mengaktifkan tahun ajaran {{ $tahunAjaran->nama }}? Tahun ajaran lain yang aktif akan dinonaktifkan."
-                        confirm-text="Ya, aktifkan!" cancel-text="Batal" icon="question"
-                        action="{{ route('tahun-ajaran.set-active', $tahunAjaran) }}" method="PATCH" />
-                @endif
+                {{-- Removed sweet-confirm components from loop --}}
 
                 <!-- Generate sweet-modal for viewing tahun ajaran details -->
                 <x-sweet.sweet-modal title="Detail Tahun Ajaran: {{ $tahunAjaran->nama }}"
@@ -168,12 +163,14 @@
                                     Edit Tahun Ajaran
                                 </button>
                                 @if (!$tahunAjaran->aktif)
-                                    <button onclick="Swal.close(); setActiveConfirm{{ $tahunAjaran->id }}()"
+                                    <button
+                                        onclick="Swal.close(); confirmSetActive('{{ route('tahun-ajaran.set-active', $tahunAjaran) }}', '{{ $tahunAjaran->nama }}')"
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                         <i class="fas fa-check mr-2"></i>
                                         Aktifkan
                                     </button>
-                                    <button onclick="Swal.close(); sweetConfirm{{ $tahunAjaran->id }}()"
+                                    <button
+                                        onclick="Swal.close(); confirmDelete('{{ route('tahun-ajaran.destroy', $tahunAjaran) }}', '{{ $tahunAjaran->nama }}')"
                                         class="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                                         <i class="fas fa-trash mr-2"></i>
                                         Hapus
@@ -215,4 +212,83 @@
             </x-slot>
         @endif
     </x-ui.card>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function confirmDelete(deleteUrl, namaItem) {
+                Swal.fire({
+                    title: 'Hapus Tahun Ajaran?',
+                    text: `Apakah Anda yakin ingin menghapus tahun ajaran ${namaItem}? Aksi ini tidak bisa dibatalkan!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Membuat form submit secara dinamis
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        // Menambahkan CSRF Token
+                        let csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfInput);
+
+                        // Menambahkan Method DELETE spoofing
+                        let methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'DELETE';
+                        form.appendChild(methodInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+
+            function confirmSetActive(activeUrl, namaItem) {
+                Swal.fire({
+                    title: 'Aktifkan Tahun Ajaran?',
+                    text: `Apakah Anda yakin ingin mengaktifkan tahun ajaran ${namaItem}? Tahun ajaran lain yang aktif akan dinonaktifkan.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, aktifkan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Membuat form submit secara dinamis
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = activeUrl;
+
+                        // Menambahkan CSRF Token
+                        let csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfInput);
+
+                        // Menambahkan Method PATCH spoofing
+                        let methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'PATCH';
+                        form.appendChild(methodInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+        </script>
+    @endpush
 </x-layout.dashboard>

@@ -167,17 +167,55 @@
         <!-- Delete Button -->
         <div class="mt-6 pt-6 border-t border-gray-200">
             <div class="flex justify-end">
-                <x-ui.button variant="danger" icon="fas fa-trash" onclick="sweetConfirm{{ $penugasanMengajar->id }}()">
+                <x-ui.button variant="danger" icon="fas fa-trash"
+                    onclick="confirmDelete('{{ route('penugasan-mengajar.destroy', $penugasanMengajar) }}', '{{ $penugasanMengajar->nama_lengkap }}')">
                     Hapus Penugasan
                 </x-ui.button>
             </div>
         </div>
 
-        <!-- Sweet Confirm for Delete -->
-        <x-sweet.sweet-confirm title="Hapus Penugasan?"
-            text="Apakah Anda yakin ingin menghapus penugasan mengajar {{ $penugasanMengajar->nama_lengkap }}? Aksi ini tidak bisa dibatalkan!"
-            confirm-text="Ya, hapus!" cancel-text="Batal" icon="warning" confirm-button-color="#ef4444"
-            cancel-button-color="#6b7280" :id="'sweetConfirm' . $penugasanMengajar->id"
-            action="{{ route('penugasan-mengajar.destroy', $penugasanMengajar) }}" method="DELETE" />
+        {{-- Removed sweet-confirm component --}}
     </x-ui.card>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function confirmDelete(deleteUrl, namaItem) {
+                Swal.fire({
+                    title: 'Hapus Penugasan?',
+                    text: `Apakah Anda yakin ingin menghapus penugasan mengajar ${namaItem}? Aksi ini tidak bisa dibatalkan!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Membuat form submit secara dinamis
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        // Menambahkan CSRF Token
+                        let csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfInput);
+
+                        // Menambahkan Method DELETE spoofing
+                        let methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'DELETE';
+                        form.appendChild(methodInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+        </script>
+    @endpush
 </x-layout.dashboard>

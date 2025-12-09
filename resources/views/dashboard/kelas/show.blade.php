@@ -30,10 +30,12 @@
             <x-slot name="header">
                 <h3 class="text-lg font-semibold text-gray-800">Detail Kelas: {{ $kelas->nama_lengkap }}</h3>
                 <div class="flex space-x-2">
-                    <x-ui.button variant="outline" icon="fas fa-edit"
-                        onclick="location.href='{{ route('kelas.edit', $kelas) }}'">
-                        Edit
-                    </x-ui.button>
+                    @can('update', $kelas)
+                        <x-ui.button variant="outline" icon="fas fa-edit"
+                            onclick="location.href='{{ route('kelas.edit', $kelas) }}'">
+                            Edit
+                        </x-ui.button>
+                    @endcan
                     <x-ui.button variant="outline" icon="fas fa-arrow-left"
                         onclick="location.href='{{ route('kelas.index') }}'">
                         Kembali
@@ -83,12 +85,14 @@
                             </h4>
 
                             {{-- Tombol Buka Modal (Pakai Alpine @click) --}}
-                            @if ($tahunAjaranAktif && $siswaTersedia->count() > 0)
-                                <button type="button" @click="showModal = true"
-                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition">
-                                    <i class="fas fa-plus mr-1"></i> Tambah
-                                </button>
-                            @endif
+                            @can('update', $kelas)
+                                @if ($tahunAjaranAktif && $siswaTersedia->count() > 0)
+                                    <button type="button" @click="showModal = true"
+                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition">
+                                        <i class="fas fa-plus mr-1"></i> Tambah
+                                    </button>
+                                @endif
+                            @endcan
                         </div>
 
                         {{-- Tabel Siswa --}}
@@ -102,6 +106,9 @@
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                                 Nama</th>
                                             <th
+                                                class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                                                Kehadiran</th>
+                                            <th
                                                 class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
                                                 Aksi</th>
                                         </tr>
@@ -111,13 +118,47 @@
                                             <tr>
                                                 <td class="px-4 py-2 text-sm text-gray-900">{{ $ks->siswa->nis }}</td>
                                                 <td class="px-4 py-2 text-sm text-gray-900">{{ $ks->siswa->nama }}</td>
+                                                <td class="px-4 py-2 text-sm text-center">
+                                                    @php
+                                                        $stats = $ks->siswa->attendance_stats ?? [
+                                                            'hadir' => 0,
+                                                            'sakit' => 0,
+                                                            'izin' => 0,
+                                                            'alpha' => 0,
+                                                            'total' => 0,
+                                                        ];
+                                                    @endphp
+                                                    <div class="flex justify-center space-x-2 text-xs">
+                                                        <span
+                                                            class="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800">
+                                                            <i class="fas fa-check mr-1"></i>{{ $stats['hadir'] }}
+                                                        </span>
+                                                        <span
+                                                            class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
+                                                            <i class="fas fa-sick mr-1"></i>{{ $stats['sakit'] }}
+                                                        </span>
+                                                        <span
+                                                            class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                                                            <i class="fas fa-envelope mr-1"></i>{{ $stats['izin'] }}
+                                                        </span>
+                                                        <span
+                                                            class="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800">
+                                                            <i class="fas fa-times mr-1"></i>{{ $stats['alpha'] }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 mt-1">
+                                                        Total: {{ $stats['total'] }} pertemuan
+                                                    </div>
+                                                </td>
                                                 <td class="px-4 py-2 text-sm font-medium text-right">
-                                                    <button type="button"
-                                                        onclick="deleteSiswa({{ $ks->id }}, '{{ $ks->siswa->nama }}')"
-                                                        class="text-red-600 hover:text-red-900"
-                                                        title="Hapus dari kelas">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
+                                                    @can('update', $kelas)
+                                                        <button type="button"
+                                                            onclick="deleteSiswa({{ $ks->id }}, '{{ $ks->siswa->nama }}')"
+                                                            class="text-red-600 hover:text-red-900"
+                                                            title="Hapus dari kelas">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    @endcan
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -131,9 +172,13 @@
                 </div>
 
                 {{-- Delete Class Section --}}
-                <div class="flex justify-end pt-4 border-t border-gray-200">
-                    <x-ui.button variant="danger" icon="fas fa-trash" onclick="sweetConfirm()">Hapus Kelas</x-ui.button>
-                </div>
+                @can('delete', $kelas)
+                    <div class="flex justify-end pt-4 border-t border-gray-200">
+                        <x-ui.button variant="danger" icon="fas fa-trash"
+                            onclick="confirmDelete('{{ route('kelas.destroy', $kelas) }}', '{{ $kelas->nama }}')">Hapus
+                            Kelas</x-ui.button>
+                    </div>
+                @endcan
             </div>
         </x-ui.card>
 
@@ -206,8 +251,47 @@
 
     {{-- 4. SCRIPTS (Dipush ke Bawah Body) --}}
     @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
         <script>
+            // Global delete confirmation function
+            function confirmDelete(deleteUrl, namaItem) {
+                Swal.fire({
+                    title: 'Hapus Kelas?',
+                    text: `Apakah Anda yakin ingin menghapus kelas ${namaItem}? Aksi ini tidak bisa dibatalkan!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Membuat form submit secara dinamis
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        // Menambahkan CSRF Token
+                        let csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfInput);
+
+                        // Menambahkan Method DELETE spoofing
+                        let methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'DELETE';
+                        form.appendChild(methodInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+
             // 1. Inisialisasi Tom Select
             document.addEventListener('DOMContentLoaded', function() {
                 const selectEl = document.getElementById('select-siswa');

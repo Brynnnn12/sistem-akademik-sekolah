@@ -74,12 +74,12 @@ class RombelService
         return $this->kenaikanKelas($siswaId, $kelasBaruId, $tahunAjaranId);
     }
 
-    public function getSiswaByKelas(int $kelasId, int $tahunAjaranId = null)
+    public function getSiswaByKelas(int $kelasId, int $tahunAjaranId)
     {
         return $this->kelasSiswaRepository->getByKelas($kelasId, $tahunAjaranId);
     }
 
-    public function getKelasBySiswa(int $siswaId, int $tahunAjaranId = null)
+    public function getKelasBySiswa(int $siswaId, int $tahunAjaranId)
     {
         return $this->kelasSiswaRepository->getBySiswa($siswaId, $tahunAjaranId);
     }

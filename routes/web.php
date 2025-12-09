@@ -70,6 +70,27 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
     // 7. Penugasan Mengajar
     Route::resource('penugasan-mengajar', \App\Http\Controllers\PenugasanMengajarController::class);
+
+    // 8. Presensi Mapel & Jurnal Mengajar
+    Route::controller(\App\Http\Controllers\PresensiMapelController::class)->prefix('presensi-mapel')->name('presensi-mapel.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/jurnal', 'jurnal')->name('jurnal');
+    });
+
+    // 9. Promotion and Graduation
+    Route::controller(\App\Http\Controllers\PromotionController::class)->prefix('promotion')->name('promotion.')->group(function () {
+        Route::get('/', 'promotionForm')->name('form');
+        Route::post('/students', 'getStudentsForPromotion')->name('students');
+        Route::post('/promote', 'promote')->name('promote');
+    });
+
+    Route::controller(\App\Http\Controllers\PromotionController::class)->prefix('graduation')->name('graduation.')->group(function () {
+        Route::get('/', 'graduationForm')->name('form');
+        Route::post('/students', 'getStudentsForGraduation')->name('students');
+        Route::post('/graduate', 'graduate')->name('graduate');
+    });
 });
 
 require __DIR__ . '/auth.php';

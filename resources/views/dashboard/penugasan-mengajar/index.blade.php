@@ -90,27 +90,30 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <x-ui.button size="xs" variant="outline" icon="fas fa-eye"
-                            onclick="location.href='{{ route('penugasan-mengajar.show', $penugasan) }}'">
-                            View
-                        </x-ui.button>
-                        <x-ui.button size="xs" variant="outline" icon="fas fa-edit"
-                            onclick="location.href='{{ route('penugasan-mengajar.edit', $penugasan) }}'">
-                            Edit
-                        </x-ui.button>
-                        <x-ui.button size="xs" variant="danger" icon="fas fa-trash"
-                            onclick="sweetConfirm{{ $penugasan->id }}()">
-                            Delete
-                        </x-ui.button>
+                        @can('view', $penugasan)
+                            <x-ui.button size="xs" variant="outline" icon="fas fa-eye"
+                                onclick="location.href='{{ route('penugasan-mengajar.show', $penugasan) }}'">
+                                View
+                            </x-ui.button>
+                        @endcan
+
+                        @can('update', $penugasan)
+                            <x-ui.button size="xs" variant="outline" icon="fas fa-edit"
+                                onclick="location.href='{{ route('penugasan-mengajar.edit', $penugasan) }}'">
+                                Edit
+                            </x-ui.button>
+                        @endcan
+
+                        @can('delete', $penugasan)
+                            <x-ui.button size="xs" variant="danger" icon="fas fa-trash"
+                                onclick="confirmDelete('{{ route('penugasan-mengajar.destroy', $penugasan) }}', '{{ $penugasan->nama_lengkap }}')">
+                                Delete
+                            </x-ui.button>
+                        @endcan
                     </td>
                 </tr>
 
-                <!-- Generate sweet-confirm for delete -->
-                <x-sweet.sweet-confirm title="Hapus Penugasan?"
-                    text="Apakah Anda yakin ingin menghapus penugasan mengajar {{ $penugasan->nama_lengkap }}? Aksi ini tidak bisa dibatalkan!"
-                    confirm-text="Ya, hapus!" cancel-text="Batal" icon="warning" confirm-button-color="#ef4444"
-                    cancel-button-color="#6b7280" :id="'sweetConfirm' . $penugasan->id"
-                    action="{{ route('penugasan-mengajar.destroy', $penugasan) }}" method="DELETE" />
+                {{-- Removed sweet-confirm component from loop --}}
             @empty
                 <tr>
                     <td colspan="5" class="px-6 py-4 text-center text-gray-500">
@@ -136,4 +139,46 @@
             </div>
         @endif
     </x-ui.card>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function confirmDelete(deleteUrl, namaItem) {
+                Swal.fire({
+                    title: 'Hapus Penugasan?',
+                    text: `Apakah Anda yakin ingin menghapus penugasan mengajar ${namaItem}? Aksi ini tidak bisa dibatalkan!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Membuat form submit secara dinamis
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        // Menambahkan CSRF Token
+                        let csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfInput);
+
+                        // Menambahkan Method DELETE spoofing
+                        let methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'DELETE';
+                        form.appendChild(methodInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+        </script>
+    @endpush
 </x-layout.dashboard>

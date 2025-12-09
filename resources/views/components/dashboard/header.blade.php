@@ -4,7 +4,7 @@
         <!-- Left Section -->
         <div class="flex items-center space-x-4">
             <!-- Mobile Menu Button -->
-            <button @click="isSidebarOpen = !isSidebarOpen"
+            <button id="header-mobile-menu-btn"
                 class="md:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <i class="fas fa-bars text-lg"></i>
             </button>
@@ -16,16 +16,15 @@
                     Dashboard
                 </a>
                 <i class="fas fa-chevron-right text-gray-400"></i>
-                <span class="text-gray-900 font-medium"
-                    x-text="activeTab.charAt(0).toUpperCase() + activeTab.slice(1)"></span>
+                <span id="current-page-title" class="text-gray-900 font-medium">{{ $title ?? 'Dashboard' }}</span>
             </nav>
         </div>
 
         <!-- Right Section -->
         <div class="flex items-center space-x-4 z-50">
             <!-- User Menu -->
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" @click.away="open = false"
+            <div class="relative">
+                <button id="user-menu-btn"
                     class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <div
                         class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-sm">
@@ -34,8 +33,8 @@
                 </button>
 
                 <!-- Dropdown Menu -->
-                <div x-show="open" x-transition
-                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-[100]">
+                <div id="user-dropdown"
+                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-[100]">
                     <a href="{{ route('profile.edit') }}"
                         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                         <i class="fas fa-user mr-3 text-gray-500"></i>
@@ -55,3 +54,26 @@
         </div>
     </div>
 </header>
+
+<script>
+    // User dropdown functionality
+    document.getElementById('user-menu-btn').addEventListener('click', function() {
+        const dropdown = document.getElementById('user-dropdown');
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        const dropdown = document.getElementById('user-dropdown');
+
+        if (!userMenuBtn.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    // Mobile menu button functionality
+    document.getElementById('header-mobile-menu-btn').addEventListener('click', function() {
+        openMobileSidebar();
+    });
+</script>

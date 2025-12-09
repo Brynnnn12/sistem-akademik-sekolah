@@ -13,7 +13,7 @@ class KelasSiswaPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['Admin', 'Guru', 'KepalaSekolah']);
     }
 
     /**
@@ -21,7 +21,7 @@ class KelasSiswaPolicy
      */
     public function view(User $user, KelasSiswa $kelasSiswa): bool
     {
-        return false;
+        return $user->hasAnyRole(['Admin', 'Guru', 'KepalaSekolah']);
     }
 
     /**
@@ -29,7 +29,7 @@ class KelasSiswaPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['Admin', 'KepalaSekolah']);
     }
 
     /**
@@ -37,7 +37,7 @@ class KelasSiswaPolicy
      */
     public function update(User $user, KelasSiswa $kelasSiswa): bool
     {
-        return false;
+        return $user->hasAnyRole(['Admin', 'KepalaSekolah']);
     }
 
     /**
@@ -45,7 +45,7 @@ class KelasSiswaPolicy
      */
     public function delete(User $user, KelasSiswa $kelasSiswa): bool
     {
-        return false;
+        return $user->hasAnyRole(['Admin', 'KepalaSekolah']);
     }
 
     /**
