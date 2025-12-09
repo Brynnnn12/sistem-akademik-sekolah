@@ -59,6 +59,12 @@
                         <i class="fas fa-chalkboard-teacher mr-3 w-5 text-center"></i>
                         <span>Penugasan Mengajar</span>
                     </a>
+
+                    <a href="{{ route('dashboard.jadwal-mengajar.index') }}"
+                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.jadwal-mengajar.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>
+                        <span>Jadwal Mengajar</span>
+                    </a>
                 @endrole
 
                 @hasanyrole('Admin|Guru|KepalaSekolah')
@@ -90,9 +96,15 @@
                 <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Proses Akademik</h3>
                 <div class="px-2 space-y-1">
                     <a href="{{ route('promotion.form') }}"
-                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.form') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
                         <i class="fas fa-arrow-up mr-3 w-5 text-center"></i>
                         <span>Kenaikan Kelas</span>
+                    </a>
+
+                    <a href="{{ route('promotion.results') }}"
+                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.results') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        <i class="fas fa-chart-bar mr-3 w-5 text-center"></i>
+                        <span>Hasil Kenaikan</span>
                     </a>
 
                     <a href="{{ route('graduation.form') }}"
@@ -189,7 +201,8 @@
         </div>
 
         <div class="mb-6">
-            <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Manajemen Pengajaran</h3>
+            <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Manajemen Pengajaran
+            </h3>
             <div class="px-2 space-y-1">
 
                 @role('Admin')
@@ -197,6 +210,12 @@
                         class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('penugasan-mengajar.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
                         <i class="fas fa-chalkboard-teacher mr-3 w-5 text-center"></i>
                         <span>Penugasan Mengajar</span>
+                    </a>
+
+                    <a href="{{ route('dashboard.jadwal-mengajar.index') }}" onclick="closeMobileSidebar()"
+                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.jadwal-mengajar.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>
+                        <span>Jadwal Mengajar</span>
                     </a>
                 @endrole
 
@@ -215,9 +234,15 @@
                 <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Proses Akademik</h3>
                 <div class="px-2 space-y-1">
                     <a href="{{ route('promotion.form') }}" onclick="closeMobileSidebar()"
-                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.form') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
                         <i class="fas fa-arrow-up mr-3 w-5 text-center"></i>
                         <span>Kenaikan Kelas</span>
+                    </a>
+
+                    <a href="{{ route('promotion.results') }}" onclick="closeMobileSidebar()"
+                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.results') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        <i class="fas fa-chart-bar mr-3 w-5 text-center"></i>
+                        <span>Hasil Kenaikan</span>
                     </a>
 
                     <a href="{{ route('graduation.form') }}" onclick="closeMobileSidebar()"

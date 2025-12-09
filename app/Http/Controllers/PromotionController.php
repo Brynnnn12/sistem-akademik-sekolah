@@ -124,17 +124,84 @@ class PromotionController extends Controller
     }
 
     /**
-     * Process student graduation.
+     * Show promotion and graduation results.
      */
-    public function graduate(Request $request): RedirectResponse
+    public function results(Request $request): View
     {
-        $request->validate([
-            'siswa_ids' => 'required|array',
-            'siswa_ids.*' => 'exists:siswas,id',
-        ]);
+        $tahunAjaranId = $request->get('tahun_ajaran_id');
 
-        $this->promotionService->graduateStudents($request->siswa_ids);
+        // Get current active academic year if not specified
+        if (!$tahunAjaranId) {
+            $tahunAjaranId = TahunAjaran::where('aktif', true)->first()?->id;
+        }
 
-        return redirect()->back()->with('success', 'Siswa berhasil diluluskan.');
+        $tahunAjaran = TahunAjaran::find($tahunAjaranId);
+        $tahunAjarans = TahunAjaran::all();
+
+        // Initialize collections
+        $promotedByClass = collect();
+        $notPromotedByClass = collect();
+        $graduatedStudents = collect();
+
+        if ($tahunAjaran) {
+            // Get all students with their class relationships for the academic year
+            $siswaWithClasses = Siswa::with(['kelas' => function ($query) use ($tahunAjaranId) {
+                $query->where('kelas_siswas.tahun_ajaran_id', $tahunAjaranId);
+            }])->whereHas('kelas', function ($query) use ($tahunAjaranId) {
+                $query->where('kelas_siswas.tahun_ajaran_id', $tahunAjaranId);
+            })->get();
+
+            foreach ($siswaWithClasses as $siswa) {
+                if ($siswa->status === 'lulus') {
+                    // Graduated students
+                    $graduatedStudents->push([
+                        'siswa' => $siswa,
+                        'kelas_asal' => $siswa->kelas->first(),
+                        'tahun_ajaran' => $tahunAjaran
+                    ]);
+                } else {
+                    // Check if student has been promoted this year
+                    $currentClass = $siswa->kelas->first();
+                    $hasRecentPromotion = $siswa->kelas()
+                        ->where('kelas_siswas.tahun_ajaran_id', $tahunAjaranId)
+                        ->where('kelas_siswas.created_at', '>', now()->startOfYear())
+                        ->exists();
+
+                    if ($hasRecentPromotion && $currentClass) {
+                        // Recently promoted students
+                        $promotedByClass->push([
+                            'siswa' => $siswa,
+                            'kelas_tujuan' => $currentClass,
+                            'tahun_ajaran' => $tahunAjaran
+                        ]);
+                    } elseif ($currentClass) {
+                        // Students who haven't been promoted yet
+                        $notPromotedByClass->push([
+                            'siswa' => $siswa,
+                            'kelas' => $currentClass,
+                            'tahun_ajaran' => $tahunAjaran
+                        ]);
+                    }
+                }
+            }
+
+            // Group promoted students by target class
+            $promotedByClass = $promotedByClass->groupBy(function ($item) {
+                return $item['kelas_tujuan']->nama . ' (' . $item['kelas_tujuan']->tingkat_kelas . ')';
+            });
+
+            // Group not promoted students by current class
+            $notPromotedByClass = $notPromotedByClass->groupBy(function ($item) {
+                return $item['kelas']->nama . ' (' . $item['kelas']->tingkat_kelas . ')';
+            });
+        }
+
+        return view('dashboard.promotion.results', compact(
+            'tahunAjaran',
+            'tahunAjarans',
+            'promotedByClass',
+            'notPromotedByClass',
+            'graduatedStudents'
+        ));
     }
 }

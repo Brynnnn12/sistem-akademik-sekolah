@@ -71,7 +71,18 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     // 7. Penugasan Mengajar
     Route::resource('penugasan-mengajar', \App\Http\Controllers\PenugasanMengajarController::class);
 
-    // 8. Presensi Mapel & Jurnal Mengajar
+    // 8. Jadwal Mengajar
+    Route::resource('jadwal-mengajar', \App\Http\Controllers\JadwalMengajarController::class)->names([
+        'index' => 'dashboard.jadwal-mengajar.index',
+        'create' => 'dashboard.jadwal-mengajar.create',
+        'store' => 'dashboard.jadwal-mengajar.store',
+        'show' => 'dashboard.jadwal-mengajar.show',
+        'edit' => 'dashboard.jadwal-mengajar.edit',
+        'update' => 'dashboard.jadwal-mengajar.update',
+        'destroy' => 'dashboard.jadwal-mengajar.destroy',
+    ]);
+
+    // 9. Presensi Mapel & Jurnal Mengajar
     Route::controller(\App\Http\Controllers\PresensiMapelController::class)->prefix('presensi-mapel')->name('presensi-mapel.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
@@ -82,6 +93,7 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     // 9. Promotion and Graduation
     Route::controller(\App\Http\Controllers\PromotionController::class)->prefix('promotion')->name('promotion.')->group(function () {
         Route::get('/', 'promotionForm')->name('form');
+        Route::get('/results', 'results')->name('results');
         Route::post('/students', 'getStudentsForPromotion')->name('students');
         Route::post('/promote', 'promote')->name('promote');
     });
