@@ -58,6 +58,13 @@ class PenugasanMengajarController extends Controller
      */
     public function show(PenugasanMengajar $penugasanMengajar): View
     {
+        $penugasanMengajar->load([
+            'guru',
+            'kelas.waliKelas',
+            'mataPelajaran',
+            'tahunAjaran',
+            'jadwalMengajars'
+        ]);
 
         return view('dashboard.penugasan-mengajar.show', compact('penugasanMengajar'));
     }

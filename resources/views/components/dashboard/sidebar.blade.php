@@ -60,11 +60,7 @@
                         <span>Penugasan Mengajar</span>
                     </a>
 
-                    <a href="{{ route('dashboard.jadwal-mengajar.index') }}"
-                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.jadwal-mengajar.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
-                        <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>
-                        <span>Jadwal Mengajar</span>
-                    </a>
+                    <!-- Menu items removed -->
                 @endrole
 
                 @hasanyrole('Admin|Guru|KepalaSekolah')
@@ -73,7 +69,22 @@
                         <i class="fas fa-clipboard-list mr-3 w-5 text-center"></i>
                         <span>Presensi & Jurnal</span>
                     </a>
+
+                    @role('Guru')
+                        <a href="{{ route('nilai.index') }}"
+                            class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('nilai.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                            <i class="fas fa-graduation-cap mr-3 w-5 text-center"></i>
+                            <span>Nilai Siswa</span>
+                        </a>
+
+                        <a href="{{ route('nilai-akhir.index') }}"
+                            class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('nilai-akhir.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                            <i class="fas fa-chart-line mr-3 w-5 text-center"></i>
+                            <span>Nilai Akhir</span>
+                        </a>
+                    @endrole
                 @endhasanyrole
+
 
                 {{-- TODO: Tambahkan Menu Nilai di sini nanti untuk Guru --}}
                 @role('Guru')
@@ -86,7 +97,14 @@
                             <i class="fas fa-chalkboard mr-3 w-5 text-center"></i>
                             <span>Kelas Saya ({{ $waliKelas->nama }})</span>
                         </a>
+
+                        <a href="{{ route('nilai-akhir.rekap-wali-kelas') }}"
+                            class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('nilai-akhir.rekap-wali-kelas') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                            <i class="fas fa-file-alt mr-3 w-5 text-center"></i>
+                            <span>Rapor Akhir Kelas</span>
+                        </a>
                     @endif
+
                 @endrole
             </div>
         </div>
@@ -212,11 +230,7 @@
                         <span>Penugasan Mengajar</span>
                     </a>
 
-                    <a href="{{ route('dashboard.jadwal-mengajar.index') }}" onclick="closeMobileSidebar()"
-                        class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.jadwal-mengajar.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
-                        <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>
-                        <span>Jadwal Mengajar</span>
-                    </a>
+                    <!-- Mobile menu items removed -->
                 @endrole
 
                 @hasanyrole('Admin|Guru|KepalaSekolah')
@@ -225,6 +239,14 @@
                         <i class="fas fa-clipboard-list mr-3 w-5 text-center"></i>
                         <span>Presensi & Jurnal</span>
                     </a>
+
+                    @role('Guru')
+                        <a href="{{ route('nilai.index') }}" onclick="closeMobileSidebar()"
+                            class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('nilai.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                            <i class="fas fa-graduation-cap mr-3 w-5 text-center"></i>
+                            <span>Nilai Siswa</span>
+                        </a>
+                    @endrole
                 @endhasanyrole
             </div>
         </div>

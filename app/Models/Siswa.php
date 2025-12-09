@@ -51,6 +51,11 @@ class Siswa extends Model
             ->withTimestamps();
     }
 
+    public function nilaiSiswas()
+    {
+        return $this->hasMany(NilaiSiswa::class, 'siswa_id');
+    }
+
     /* -------------------------------------------------------------------------- */
     /* Scopes                                    */
     /* -------------------------------------------------------------------------- */

@@ -71,18 +71,7 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     // 7. Penugasan Mengajar
     Route::resource('penugasan-mengajar', \App\Http\Controllers\PenugasanMengajarController::class);
 
-    // 8. Jadwal Mengajar
-    Route::resource('jadwal-mengajar', \App\Http\Controllers\JadwalMengajarController::class)->names([
-        'index' => 'dashboard.jadwal-mengajar.index',
-        'create' => 'dashboard.jadwal-mengajar.create',
-        'store' => 'dashboard.jadwal-mengajar.store',
-        'show' => 'dashboard.jadwal-mengajar.show',
-        'edit' => 'dashboard.jadwal-mengajar.edit',
-        'update' => 'dashboard.jadwal-mengajar.update',
-        'destroy' => 'dashboard.jadwal-mengajar.destroy',
-    ]);
-
-    // 9. Presensi Mapel & Jurnal Mengajar
+    // 8. Presensi Mapel & Jurnal Mengajar
     Route::controller(\App\Http\Controllers\PresensiMapelController::class)->prefix('presensi-mapel')->name('presensi-mapel.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
@@ -98,10 +87,35 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
         Route::post('/promote', 'promote')->name('promote');
     });
 
+
+    //graduated students
     Route::controller(\App\Http\Controllers\PromotionController::class)->prefix('graduation')->name('graduation.')->group(function () {
         Route::get('/', 'graduationForm')->name('form');
+        Route::get('/results', 'results')->name('results');
         Route::post('/students', 'getStudentsForGraduation')->name('students');
         Route::post('/graduate', 'graduate')->name('graduate');
+    });
+
+    // 10. Nilai Management
+    Route::controller(\App\Http\Controllers\NilaiController::class)->prefix('nilai')->name('nilai.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/penugasan/{penugasanId}', 'showByPenugasan')->name('show-by-penugasan');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{komponenNilaiId}', 'show')->name('show');
+        Route::get('/{komponenNilaiId}/edit', 'edit')->name('edit');
+        Route::match(['put', 'patch'], '/{komponenNilaiId}', 'update')->name('update');
+        Route::delete('/{komponenNilaiId}', 'destroy')->name('destroy');
+
+        // Store nilai siswa massal
+        Route::post('/{komponenNilaiId}/nilai-siswa', 'storeNilaiSiswa')->name('store-nilai-siswa');
+    });
+
+    // 11. Nilai Akhir
+    Route::controller(\App\Http\Controllers\NilaiAkhirController::class)->prefix('nilai-akhir')->name('nilai-akhir.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/generate', 'generate')->name('generate');
+        Route::get('/rekap-wali-kelas', 'rekapWaliKelas')->name('rekap-wali-kelas');
     });
 });
 

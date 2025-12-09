@@ -14,7 +14,7 @@ class PenugasanMengajarRepository
 
     public function getAllPaginated(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
-        $query = $this->model->with(['guru', 'kelas', 'mataPelajaran', 'tahunAjaran']);
+        $query = $this->model->with(['guru', 'kelas', 'mataPelajaran', 'tahunAjaran', 'jadwalMengajars']);
 
         if ($search) {
             $query->search($search);
@@ -25,7 +25,7 @@ class PenugasanMengajarRepository
 
     public function getAll(): Collection
     {
-        return $this->model->with(['guru', 'kelas', 'mataPelajaran', 'tahunAjaran'])->get();
+        return $this->model->with(['guru', 'kelas', 'mataPelajaran', 'tahunAjaran', 'jadwalMengajars'])->get();
     }
 
     public function findById(int $id): ?PenugasanMengajar

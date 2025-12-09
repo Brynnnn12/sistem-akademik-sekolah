@@ -217,15 +217,17 @@
 
                                             <div class="mb-4">
                                                 <label class="block text-sm font-medium text-gray-700 mb-2">Pilih
-                                                    Siswa</label>
-                                                <select name="siswa_id" id="select-siswa" autocomplete="off"
-                                                    placeholder="Cari siswa...">
-                                                    <option value="">Cari siswa...</option>
+                                                    Siswa <span class="text-xs text-gray-500">(bisa pilih
+                                                        banyak)</span></label>
+                                                <select name="siswa_id[]" id="select-siswa" autocomplete="off"
+                                                    placeholder="Cari dan pilih siswa..." multiple>
                                                     @foreach ($siswaTersedia as $siswa)
                                                         <option value="{{ $siswa->id }}">{{ $siswa->nis }} -
                                                             {{ $siswa->nama }}</option>
                                                     @endforeach
                                                 </select>
+                                                <p class="text-xs text-gray-500 mt-1">Gunakan Ctrl+Click atau drag
+                                                    untuk memilih banyak siswa</p>
                                             </div>
 
                                             <div class="flex justify-end space-x-3 mt-6">
@@ -238,6 +240,27 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Bulk Errors Alert --}}
+        @if (session('bulk_errors'))
+            <div class="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">Beberapa siswa gagal ditambahkan:</h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach (session('bulk_errors') as $error)
+                                    <li>Siswa ID {{ $error['siswa_id'] }}: {{ $error['message'] }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -302,9 +325,21 @@
                             field: "text",
                             direction: "asc"
                         },
-                        placeholder: "Cari nama atau NIS...",
-                        plugins: ['clear_button'],
-                        dropdownParent: 'body' // Penting: agar dropdown muncul di atas modal z-index
+                        placeholder: "Cari dan pilih siswa...",
+                        plugins: ['clear_button', 'remove_button'],
+                        dropdownParent: 'body', // Penting: agar dropdown muncul di atas modal z-index
+                        maxItems: null, // Unlimited selection
+                        hideSelected: true, // Hide selected items from dropdown
+                        closeAfterSelect: false, // Keep dropdown open after selection
+                        render: {
+                            option: function(data, escape) {
+                                return '<div>' + escape(data.text) + '</div>';
+                            },
+                            item: function(data, escape) {
+                                return '<div class="flex items-center"><span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">SISWA</span>' +
+                                    escape(data.text) + '</div>';
+                            }
+                        }
                     });
                 }
             });

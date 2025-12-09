@@ -162,6 +162,43 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Jadwal Mengajar -->
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-calendar-alt mr-2 text-green-600"></i>
+                    Jadwal Mengajar
+                </h4>
+                @if ($penugasanMengajar->jadwalMengajars->count() > 0)
+                    <div class="space-y-3">
+                        @foreach ($penugasanMengajar->jadwalMengajars as $jadwal)
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div
+                                            class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-clock text-green-600"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ $jadwal->hari }}</p>
+                                        <p class="text-sm text-gray-500">
+                                            {{ $jadwal->jam_mulai->format('H:i') }} -
+                                            {{ $jadwal->jam_selesai->format('H:i') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-8">
+                        <i class="fas fa-calendar-times text-gray-400 text-3xl mb-3"></i>
+                        <p class="text-gray-500">Belum ada jadwal mengajar yang ditentukan</p>
+                        <p class="text-sm text-gray-400 mt-1">Tambahkan jadwal untuk penugasan ini</p>
+                    </div>
+                @endif
+            </div>
         </div>
 
         <!-- Delete Button -->

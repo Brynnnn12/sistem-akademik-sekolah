@@ -88,4 +88,31 @@ class RombelService
     {
         return $this->kelasSiswaRepository->getSiswaAvailableForKelas($kelasId, $tahunAjaranId);
     }
+
+    /**
+     * Bulk assign multiple siswa to kelas.
+     */
+    public function bulkAssignSiswaToKelas(array $siswaIds, int $kelasId, int $tahunAjaranId): array
+    {
+        return DB::transaction(function () use ($siswaIds, $kelasId, $tahunAjaranId) {
+            $results = [
+                'success' => [],
+                'errors' => []
+            ];
+
+            foreach ($siswaIds as $siswaId) {
+                try {
+                    $kelasSiswa = $this->assignSiswaToKelas($siswaId, $kelasId, $tahunAjaranId);
+                    $results['success'][] = $kelasSiswa;
+                } catch (\Exception $e) {
+                    $results['errors'][] = [
+                        'siswa_id' => $siswaId,
+                        'message' => $e->getMessage()
+                    ];
+                }
+            }
+
+            return $results;
+        });
+    }
 }

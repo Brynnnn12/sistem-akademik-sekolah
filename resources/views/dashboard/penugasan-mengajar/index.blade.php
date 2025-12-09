@@ -69,7 +69,7 @@
         </div>
 
         <!-- Penugasan Mengajar Table -->
-        <x-ui.table :headers="['Guru', 'Mata Pelajaran', 'Kelas', 'Tahun Ajaran', 'Aksi']" striped hover>
+        <x-ui.table :headers="['Guru', 'Mata Pelajaran', 'Kelas', 'Tahun Ajaran', 'Jadwal', 'Aksi']" striped hover>
             @forelse($penugasanMengajars as $penugasan)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -88,6 +88,21 @@
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             {{ $penugasan->tahunAjaran->nama }}
                         </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if ($penugasan->jadwalMengajars->count() > 0)
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                {{ $penugasan->jadwalMengajars->count() }} jadwal
+                            </span>
+                        @else
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Belum ada
+                            </span>
+                        @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         @can('view', $penugasan)
@@ -116,7 +131,7 @@
                 {{-- Removed sweet-confirm component from loop --}}
             @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
                         <div class="flex flex-col items-center">
                             <i class="fas fa-chalkboard-teacher text-4xl text-gray-300 mb-2"></i>
                             <p>Tidak ada data penugasan mengajar</p>

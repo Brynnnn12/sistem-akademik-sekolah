@@ -54,7 +54,21 @@ class PenugasanMengajarService
                 ]);
             }
 
-            return $this->penugasanMengajarRepository->create($data);
+            // Extract jadwal data
+            $jadwalData = $data['jadwal'] ?? [];
+            unset($data['jadwal']);
+
+            // Create penugasan mengajar
+            $penugasanMengajar = $this->penugasanMengajarRepository->create($data);
+
+            // Create jadwal mengajar
+            if (!empty($jadwalData)) {
+                foreach ($jadwalData as $jadwal) {
+                    $penugasanMengajar->jadwalMengajars()->create($jadwal);
+                }
+            }
+
+            return $penugasanMengajar->load('jadwalMengajars');
         });
     }
 

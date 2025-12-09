@@ -9,24 +9,100 @@
 </p>
 
 <p align="center">
-  <strong>🏫 Sistem Manajemen Akademik Lengkap untuk Sekolah Dasar dengan Laravel</strong>
+  <strong>🧮 Alat Bantu Hitung & Arsip Nilai Akademik Sekolah Dasar dengan Laravel</strong>
 </p>
+
+## 📖 Daftar Isi
+
+-   [📋 Tentang Sistem](#-tentang-sistem)
+-   [🏗️ Arsitektur Sistem](#️-arsitektur-sistem)
+-   [🗄️ Struktur Database](#️-struktur-database)
+-   [🔄 Alur Kerja Sistem](#-alur-kerja-sistem-workflow)
+-   [💻 Persyaratan Sistem](#-persyaratan-sistem)
+-   [🚀 Panduan Instalasi](#-panduan-instalasi)
+-   [⚙️ Konfigurasi Awal](#️-konfigurasi-awal)
+-   [🚀 Production Deployment](#-production-deployment)
+-   [🔧 Troubleshooting](#-troubleshooting)
+-   [👤 User Default](#-user-default)
+-   [📊 Status Pengembangan](#-status-pengembangan)
+-   [🔍 Fitur Detail](#-fitur-detail)
+-   [🧪 Testing](#-testing)
+-   [📚 Teknologi](#-teknologi)
+-   [📋 Changelog](#-changelog)
+-   [🤝 Kontribusi](#-kontribusi)
+-   [🆘 Dukungan & Bantuan](#-dukungan--bantuan)
+-   [📄 Lisensi](#-lisensi)
+
+---
+
+## 📖 Daftar Isi
+
+-   [📋 Tentang Sistem](#-tentang-sistem)
+-   [🏗️ Arsitektur Sistem](#️-arsitektur-sistem)
+-   [🗄️ Struktur Database](#️-struktur-database)
+-   [🔄 Alur Kerja Sistem](#-alur-kerja-sistem-workflow)
+-   [💻 Persyaratan Sistem](#-persyaratan-sistem)
+-   [🚀 Panduan Instalasi](#-panduan-instalasi)
+-   [⚙️ Konfigurasi Awal](#️-konfigurasi-awal)
+-   [🚀 Production Deployment](#-production-deployment)
+-   [🔧 Troubleshooting](#-troubleshooting)
+-   [👤 User Default](#-user-default)
+-   [📊 Status Pengembangan](#-status-pengembangan)
+-   [🔍 Fitur Detail](#-fitur-detail)
+-   [🧪 Testing](#-testing)
+-   [📚 Teknologi](#-teknologi)
+-   [📋 Changelog](#-changelog)
+-   [🤝 Kontribusi](#-kontribusi)
+-   [🆘 Dukungan & Bantuan](#-dukungan--bantuan)
+-   [📄 Lisensi](#-lisensi)
+
+---
 
 ## 📋 Tentang Sistem
 
-Sistem Akademik Sekolah Dasar adalah aplikasi web berbasis Laravel yang dirancang khusus untuk mengelola operasional sekolah dasar (SD) secara menyeluruh. Sistem ini mencakup manajemen profil pengguna, data siswa, kelas, jadwal mengajar, penilaian harian, absensi, hingga pembuatan rapor akhir semester.
+Sistem Akademik Sekolah Dasar adalah **alat bantu hitung dan arsip nilai** berbasis web yang dirancang khusus untuk sekolah dasar di Indonesia. Sistem ini membantu guru menghitung nilai rapor secara otomatis dan akurat, serta menyediakan arsip digital nilai siswa.
+
+### 🎯 Pendekatan Sistem
+
+**Input → Proses → Tampilkan Leger → Guru Salin ke Buku Rapor**
+
+Sistem ini **TIDAK** menghasilkan PDF rapor siap cetak, melainkan fokus pada:
+
+-   **Kalkulator Nilai Otomatis**: Hitung rata-rata dengan bobot yang tepat
+-   **Leger Nilai Digital**: Tabel rekap nilai semua siswa per kelas
+-   **Generator Deskripsi**: Saran narasi rapor otomatis
+-   **Arsip Digital**: Backup nilai jika buku rapor hilang/rusak
+
+### 💡 Mengapa Pendekatan Ini?
+
+Banyak SD di Indonesia masih menggunakan **buku rapor manual** (buku hijau/merah) dimana guru harus menulis tangan. Sistem ini menjadi **contekan digital** untuk:
+
+-   Menghindari salah hitung rata-rata
+-   Menyediakan arsip digital sebagai backup
+-   Memudahkan monitoring kepala sekolah
+-   Menghemat waktu guru dalam menghitung nilai
+
+### 👥 Pengguna Sistem
+
+-   **Administrator**: Setup sistem dan data master
+-   **Guru Mapel**: Input nilai harian, UTS, UAS
+-   **Wali Kelas**: Lihat leger nilai, ranking siswa
+-   **Kepala Sekolah**: Monitoring nilai dan ranking siswa
 
 ### ✨ Fitur Utama
 
--   🔐 **Authentication & Authorization** - Laravel Breeze + Spatie Permission (Admin, Guru, Kepsek)
--   👨‍🏫 **Manajemen Profil** - Biodata lengkap guru/kepsek dengan upload foto
--   📚 **Data Master** - Tahun Ajaran, Mata Pelajaran, Siswa, Kelas (CRUD lengkap)
+-   🧮 **Kalkulator Nilai Otomatis** - Hitung rata-rata dengan bobot (UH/UTS/UAS)
+-   📊 **Leger Nilai Digital** - Tabel rekap nilai semua siswa per kelas
+-   📝 **Generator Deskripsi** - Saran narasi rapor otomatis berdasarkan nilai
+-   🏆 **Ranking Otomatis** - Tentukan juara kelas dalam hitungan detik
+-   🔐 **Authentication & Authorization** - Laravel Breeze + Spatie Permission
+-   👨‍🏫 **Manajemen Profil** - Biodata guru/kepsek dengan upload foto
+-   📚 **Data Master** - Tahun Ajaran, Mata Pelajaran, Siswa, Kelas (CRUD)
 -   👥 **Rombongan Belajar** - Plotting siswa ke kelas per tahun ajaran
--   📅 **Penugasan Mengajar** - Assignment guru-mapel-kelas per tahun ajaran
--   📋 **Jadwal Mengajar** - Penjadwalan otomatis per hari (Senin-Sabtu)
--   📝 **Presensi Mapel** - Absensi per mata pelajaran dengan jurnal mengajar
--   👁️ **Dashboard Wali Kelas** - Monitoring kehadiran siswa dengan statistik detail
--   🎯 **Promotion & Graduation** - Kenaikan kelas otomatis + kelulusan siswa
+-   📅 **Penugasan Mengajar** - Assignment guru-mapel-kelas
+-   📋 **Jadwal Mengajar** - Penjadwalan otomatis per hari
+-   📝 **Presensi Mapel** - Absensi per mata pelajaran dengan jurnal
+-   👁️ **Dashboard Wali Kelas** - Monitoring kehadiran dan nilai siswa
 -   🎨 **UI Modern** - Responsive dengan Tailwind CSS + Alpine.js
 -   📊 **Dashboard Analytics** - Charts & statistik real-time
 -   🧪 **Testing Lengkap** - Unit & Feature tests dengan Pest PHP
@@ -62,14 +138,62 @@ erDiagram
     komponen_nilai ||--o{ nilai_siswa : "Detail Nilai"
     siswa ||--o{ nilai_siswa : "Milik Siswa"
 
-    %% HASIL AKHIR (RAPOR)
-    siswa ||--o{ nilai_akhir : "Punya Rapor"
+    %% HASIL AKHIR (NILAI RAPOR)
+    siswa ||--o{ nilai_akhir : "Punya Nilai Akhir"
     mata_pelajarans ||--o{ nilai_akhir : "Nilai Mapel"
 
     %% ABSENSI
-    kelas ||--o{ kehadiran : "Lokasi Absen"
-    siswa ||--o{ kehadiran : "Data Kehadiran"
-```## 🗄️ Struktur Database
+    kelas ||--o{ kehadiran : "Lokasi Absen Harian"
+    siswa ||--o{ kehadiran : "Data Kehadiran Harian"
+    siswa ||--o{ presensi_mapel : "Data Kehadiran Mapel"
+    mata_pelajarans ||--o{ presensi_mapel : "Mapel"
+    pengguna ||--o{ presensi_mapel : "Guru"
+```
+
+### Penjelasan Detail Tabel
+
+#### A. Inti & Pengguna
+
+-   **users**: Akun login (Admin, Guru, Kepsek).
+-   **profiles**: Biodata detail (NIP, Alamat, Foto).
+-   **sekolahs**: Data sekolah (Nama, Alamat, Logo) & Link ke users (Kepsek).
+
+#### B. Operasional (Jantung Sistem)
+
+-   **tahun_ajarans**: Tahun akademik (2024/2025 Ganjil).
+-   **kelas**: Nama kelas fisik (1A, 6B) & Link ke users (Wali Kelas).
+-   **mata_pelajarans**: List pelajaran (MTK, IPA).
+-   **siswas**: Data murid.
+-   **kelas_siswas** (Pivot): Menentukan siswa ada di kelas mana pada tahun ini.
+-   **penugasan_mengajars**: Menentukan Guru A mengajar Mapel B di Kelas C.
+-   **jadwal_mengajars**: Jam mengajar berdasarkan penugasan (Senin 07:00).
+
+#### C. Harian (Guru Mapel)
+
+-   **presensi_mapels**: Absensi siswa per jam pelajaran & Jurnal guru. (Menggantikan kehadirans harian).
+
+#### D. Penilaian (Guru Mapel)
+
+-   **komponen_nilais**: Wadah nilai (UH 1, UTS) + Bobot. Terhubung ke penugasan_mengajars.
+-   **nilai_siswas**: Angka nilai mentah (0-100).
+
+#### E. Output (Wali Kelas & Leger)
+
+-   **nilai_akhirs**: Hasil hitungan rata-rata mapel. Ini yang tampil di Leger.
+-   **catatan_wali_kelas**: Sikap Sosial & Spiritual, Status Naik Kelas, Rekap Absensi (Sakit, Izin, Alpha) → Hasil hitungan dari presensi_mapels.
+-   **prestasi_siswas**: Data lomba/juara untuk pelengkap.
+
+### Alur Data (Data Flow)
+
+1. **Input**: Guru Mapel mengisi nilai_siswas dan presensi_mapels.
+2. **Proses**: Sistem menghitung rata-rata nilai berdasarkan bobot di komponen_nilais → Disimpan ke nilai_akhirs.
+3. **Proses**: Sistem menghitung total S/I/A dari presensi_mapels → Disimpan ke catatan_wali_kelas.
+4. **Output (Leger)**: Wali kelas membuka halaman Leger. Sistem menarik data dari nilai_akhirs + catatan_wali_kelas.
+5. **Final**: Wali kelas menyalin angka dari layar laptop ke Buku Rapor fisik.
+
+**ERD ini sudah sangat efisien, tidak ada data ganda (redundant), dan mencakup seluruh kebutuhan sekolah dasar modern.**
+
+## 🗄️ Struktur Database
 
 ### Migrasi Laravel (Urutan Pembuatan)
 
@@ -100,7 +224,7 @@ Schema::create('profiles', function (Blueprint $table) {
     $table->string('foto')->nullable();
     $table->timestamps();
 });
-````
+```
 
 #### 2. Data Master Sekolah
 
@@ -150,7 +274,25 @@ Schema::create('kelas', function (Blueprint $table) {
 });
 ```
 
-#### 3. Operasional Akademik
+#### 3. Absensi Harian
+
+```php
+// kehadirans (Absen harian wali kelas - hanya menyimpan yang tidak hadir)
+Schema::create('kehadirans', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('siswa_id')->constrained('siswas')->cascadeOnDelete();
+    $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete();
+    $table->foreignId('tahun_ajaran_id')->constrained('tahun_ajarans')->cascadeOnDelete();
+
+    $table->date('tanggal');
+    $table->enum('status', ['S', 'I', 'A']); // Sakit, Izin, Alpha (Hadir tidak disimpan)
+    $table->string('keterangan')->nullable();
+
+    $table->timestamps();
+});
+```
+
+#### 4. Operasional Akademik
 
 ```php
 // kelas_siswas (Siswa masuk kelas per tahun ajaran)
@@ -204,13 +346,14 @@ Schema::create('presensi_mapels', function (Blueprint $table) {
     $table->unique(['siswa_id', 'mata_pelajaran_id', 'tanggal', 'jam_mulai'], 'unique_presensi_mapel');
 });
 
-// komponen_nilai (Wadah Nilai: Guru buat "Slot" nilai dulu)
+// komponen_nilai (Wadah Nilai dengan Bobot)
 Schema::create('komponen_nilai', function (Blueprint $table) {
     $table->id();
     // Relasi ke penugasan_mengajar agar spesifik (Guru A, Mata Pelajaran B, Kelas C)
     $table->foreignId('penugasan_mengajar_id')->constrained('penugasan_mengajar')->onDelete('cascade');
     $table->string('nama'); // "PR Bab 1", "UH 1"
     $table->enum('jenis', ['tugas', 'uh', 'uts', 'uas']);
+    $table->integer('bobot')->default(1); // Bobot penilaian
     $table->timestamps();
 });
 
@@ -247,25 +390,67 @@ Schema::create('nilai_akhir', function (Blueprint $table) {
 
 ## 🔄 Alur Kerja Sistem (Workflow)
 
+### 📝 **Pola Kerja: Input → Hitung → Leger → Salin Manual**
+
+Sistem ini dirancang sebagai **alat bantu hitung** yang bekerja sama dengan **buku rapor manual** (buku hijau/merah) yang masih digunakan di banyak SD Indonesia.
+
+### Guru Mapel:
+
+1. **Input Nilai Harian**: Masukkan nilai UH, tugas, praktek
+2. **Input Ujian**: Masukkan nilai UTS dan UAS
+3. **Sistem Otomatis**: Hitung rata-rata dengan bobot (contoh: UH 40% + UTS 30% + UAS 30%)
+
+### Wali Kelas:
+
+1. **Login ke Sistem**: Akses dashboard wali kelas
+2. **Buka Leger Nilai**: Lihat tabel rekap nilai semua siswa
+3. **Ambil Buku Rapor**: Buku rapor asli (manual)
+4. **Salin ke Buku**: Copy angka dari layar ke buku rapor tulisan tangan
+5. **Generator Deskripsi**: Copy saran narasi rapor yang dihasilkan sistem
+
+### Kepala Sekolah:
+
+1. **Monitoring Real-time**: Pantau perkembangan nilai siswa
+2. **Cek Ranking**: Lihat peringkat siswa otomatis
+3. **Validasi Data**: Pastikan tidak ada kesalahan input
+
+### 💡 **Keuntungan Sistem Ini:**
+
+-   ✅ **Akurasi**: Tidak ada salah hitung rata-rata manual
+-   ✅ **Arsip Digital**: Backup jika buku rapor hilang/rusak/terbakar
+-   ✅ **Transparansi**: Kepsek bisa monitor tanpa pinjam buku
+-   ✅ **Efisiensi**: Ranking dan statistik dalam hitungan detik
+-   ✅ **Fleksibilitas**: Tetap menggunakan buku rapor tradisional
+
 ### Admin:
 
 -   **Setup Awal**: Buat user guru & kepsek, data master (tahun ajaran, mapel, siswa)
--   **Plotting Tahunan**:
-    -   Tentukan siswa masuk kelas mana (`kelas_siswa`)
-    -   Tentukan guru mengajar apa di kelas mana (`penugasan_mengajar`)
+-   **Plotting Tahunan**: Tentukan siswa masuk kelas mana dan guru mengajar apa
 
-### Guru:
+## 💻 Persyaratan Sistem
 
--   **Absensi Harian**: Input ke `kehadiran`
--   **Penilaian Harian**:
-    -   Buat "slot nilai" (UH/Tugas) → `komponen_nilai`
-    -   Input nilai siswa → `nilai_siswa`
--   **Akhir Semester**: Generate rapor (hitung rata-rata → simpan ke `nilai_akhir`)
+### Minimum Requirements
 
-### Kepsek:
+-   **OS**: Windows 10+, Linux (Ubuntu 18.04+), macOS 10.14+
+-   **RAM**: 2GB minimum, 4GB recommended
+-   **Storage**: 500MB free space
+-   **CPU**: Dual-core processor
 
--   **Monitoring**: Dashboard statistik
--   **Rapor**: Lihat/cetak rapor siswa dari `nilai_akhir`
+### Software Requirements
+
+-   **PHP**: 8.3 atau lebih tinggi
+-   **Composer**: 2.x
+-   **Node.js**: 18.x atau lebih tinggi (LTS)
+-   **NPM**: 8.x atau lebih tinggi
+-   **MySQL**: 8.0 atau MariaDB 10.5+
+-   **Web Server**: Apache 2.4+ atau Nginx 1.20+
+
+### Browser Support
+
+-   Chrome 90+
+-   Firefox 88+
+-   Safari 14+
+-   Edge 90+
 
 ## 🚀 Panduan Instalasi
 
@@ -329,6 +514,91 @@ Schema::create('nilai_akhir', function (Blueprint $table) {
     ```
 
 Kunjungi `http://localhost:8000` untuk mulai menggunakan sistem!
+
+## ⚙️ Konfigurasi Awal
+
+### 1. Setup Database
+
+Pastikan database MySQL sudah dibuat dan konfigurasi di `.env` sudah benar.
+
+### 2. Jalankan Seeder
+
+```bash
+php artisan db:seed
+```
+
+Seeder akan membuat:
+
+-   User default (admin, guru, kepsek)
+-   Data master dasar (tahun ajaran, mata pelajaran)
+-   Permissions dan roles
+
+### 3. Setup Storage Link
+
+```bash
+php artisan storage:link
+```
+
+### 4. Konfigurasi Permissions
+
+Pastikan folder berikut memiliki permission write:
+
+-   `storage/app/public`
+-   `storage/logs`
+-   `bootstrap/cache`
+
+### 5. Akses Sistem
+
+Gunakan akun default untuk login pertama kali:
+
+-   **Admin**: `admin@sekolah.com` / `password`
+-   **Guru**: `guru@sekolah.com` / `password`
+-   **Kepsek**: `kepsek@sekolah.com` / `password`
+
+### 6. Setup Data Master
+
+Login sebagai Admin dan lakukan:
+
+1. Buat tahun ajaran aktif
+2. Tambahkan data mata pelajaran
+3. Input data siswa
+4. Buat kelas dan wali kelas
+5. Assign guru ke mata pelajaran dan kelas
+
+## 📖 Cara Penggunaan
+
+### Untuk Administrator
+
+1. **Login** dengan akun admin
+2. **Setup Tahun Ajaran**: Buat tahun ajaran baru dan set sebagai aktif
+3. **Kelola Data Master**: Input mata pelajaran, siswa, dan kelas
+4. **Penugasan**: Assign guru ke mata pelajaran dan kelas
+5. **Monitoring**: Pantau aktivitas sistem melalui dashboard
+
+### Untuk Guru Mapel
+
+1. **Login** dengan akun guru
+2. **Lihat Jadwal**: Cek jadwal mengajar hari ini
+3. **Input Presensi Mapel**: Klik jadwal dan input presensi siswa dengan jurnal
+4. **Penilaian**: Buat komponen nilai dengan bobot dan input nilai siswa
+5. **Sistem Hitung Otomatis**: Sistem hitung rata-rata berdasarkan bobot
+
+### Untuk Wali Kelas
+
+1. **Login** dengan akun wali kelas
+2. **Input Absensi Harian**: Catat siswa yang sakit/izin/alpha
+3. **Buka Leger Nilai**: Lihat tabel rekap nilai semua siswa per kelas
+4. **Ambil Buku Rapor**: Buku rapor manual (buku hijau/merah)
+5. **Salin Manual**: Copy angka dari leger digital ke buku rapor tulisan tangan
+6. **Generator Deskripsi**: Copy saran narasi rapor untuk deskripsi manual
+
+### Untuk Kepala Sekolah
+
+1. **Login** dengan akun kepsek
+2. **Dashboard Overview**: Lihat statistik keseluruhan sekolah
+3. **Monitoring Guru**: Pantau aktivitas mengajar dan nilai siswa
+4. **Cek Leger**: Validasi nilai dan ranking siswa
+5. **Laporan**: Generate laporan statistik sekolah
 
 ## 🚀 Production Deployment
 
@@ -493,42 +763,39 @@ Cek logs aplikasi di `storage/logs/laravel.log`
 
 ## 📊 Status Pengembangan
 
-### ✅ Sudah Selesai
+### ✅ Sudah Selesai (v1.0.0)
 
 #### 🔐 Core System
 
--   [x] Sistem autentikasi dengan role (Admin/Guru/Kepsek)
+-   [x] Sistem autentikasi dengan role (Admin/Guru/Wali Kelas/Kepsek)
 -   [x] Manajemen profil pengguna (terpisah dari login)
--   [x] Upload foto profil
+-   [x] Upload foto profil dengan validasi
 -   [x] Clean Architecture (Controller → Service → Repository)
 -   [x] UI responsif dengan Tailwind CSS & Alpine.js
 
-#### 📚 Master Data
+#### 📚 Data Master Management
 
--   [x] Tahun Ajaran management (CRUD lengkap)
--   [x] Mata Pelajaran management (CRUD + soft delete)
--   [x] Siswa management (CRUD + soft delete)
--   [x] Kelas management (CRUD + wali kelas)
+-   [x] Tahun Ajaran CRUD (aktif/non-aktif, soft delete)
+-   [x] Mata Pelajaran CRUD (kode unik, KKM)
+-   [x] Siswa CRUD (NIS/NISN, status siswa)
+-   [x] Kelas CRUD (nama, tingkat, wali kelas)
 
 #### 👥 Operational Management
 
--   [x] Penugasan Mengajar (Guru - Mapel - Kelas assignment)
+-   [x] Penugasan Mengajar (Guru-Mapel-Kelas assignment)
 -   [x] Rombongan Belajar (Siswa per kelas per tahun ajaran)
--   [x] **Jadwal Mengajar** (Penjadwalan otomatis berdasarkan hari & jam)
-    -   Jadwal per hari (Senin - Sabtu)
-    -   Jam mulai & selesai pembelajaran
-    -   Integrasi dengan penugasan mengajar
--   [x] **Presensi Mapel & Jurnal Mengajar** (Absensi per mata pelajaran dengan bulk input)
-    -   **Deteksi Otomatis Jadwal**: Sistem otomatis menampilkan jadwal mengajar hari ini
-    -   **Quick Access**: Guru langsung klik jadwal tanpa input manual
-    -   **Smart Detection**: Tanggal & jam otomatis terisi sesuai jadwal
-    -   Bulk input presensi dengan status: Hadir, Sakit, Izin, Alpha, Bolos
-    -   Jurnal mengajar untuk mencatat materi pembelajaran
-    -   Validasi otomatis berdasarkan penugasan mengajar
-    -   Riwayat jurnal dengan filter kelas, mapel, dan tanggal
+-   [x] Jadwal Mengajar (Penjadwalan otomatis per hari)
+-   [x] Presensi Mapel & Harian (Bulk input, auto-detection)
 -   [x] Dashboard akademik dengan statistik real-time
--   [x] Modern pagination dengan Tailwind
+-   [x] Modern pagination dengan Tailwind CSS
 -   [x] Tom Select untuk dropdown searchable
+
+#### 🧮 Kalkulasi & Leger
+
+-   [x] Kalkulator nilai otomatis dengan bobot
+-   [x] Leger nilai digital (tabel rekap per kelas)
+-   [x] Ranking siswa otomatis
+-   [x] Generator deskripsi rapor otomatis
 
 #### 🎨 UI/UX Enhancements
 
@@ -538,26 +805,30 @@ Cek logs aplikasi di `storage/logs/laravel.log`
 -   [x] Responsive mobile-first design
 -   [x] Component-based architecture
 
-#### 🧪 Testing
+#### 🧪 Testing & Quality
 
 -   [x] Testing lengkap untuk fitur profil
 -   [x] Unit & Feature tests dengan Pest PHP
+-   [x] PSR-12 coding standards
+-   [x] Clean code principles
 
-### 🚧 Dalam Proses
+### 🚧 Dalam Pengembangan
 
--   [ ] Penilaian harian (komponen nilai)
--   [ ] Input nilai siswa per komponen
--   [ ] Kalkulasi nilai akhir
--   [ ] Generate rapor akhir (PDF)
+-   [ ] Export Leger ke Excel/CSV
+-   [ ] Template generator deskripsi yang lebih variatif
+-   [ ] Dashboard ranking siswa antar kelas
+-   [ ] Notifikasi reminder input nilai
 
-### 📋 Rencana Selanjutnya
+### 📋 Rencana Pengembangan Selanjutnya
 
--   [ ] Dashboard dengan statistik lanjutan
--   [ ] Export data ke Excel/CSV
--   [ ] API untuk mobile app
--   [ ] Multi-tenant untuk multiple sekolah
--   [ ] Notifikasi email/SMS
--   [ ] Backup & restore otomatis
+-   [ ] API untuk integrasi dengan aplikasi mobile guru
+-   [ ] Sistem backup otomatis database nilai
+-   [ ] Multi-tenant untuk jaringan sekolah
+-   [ ] QR Code untuk absensi siswa
+-   [ ] Template rapor digital untuk sekolah yang sudah siap
+-   [ ] Integration dengan sistem pembayaran SPP
+-   [ ] Parent portal untuk monitoring nilai anak
+-   [ ] Sistem voting untuk pemilihan ketua kelas
 
 ## 🧪 Testing
 
@@ -571,33 +842,11 @@ php artisan test tests/Feature/ProfileTest.php
 
 ## 📚 Teknologi
 
--   **Backend**: Laravel 12
--   **Frontend**: Blade + Tailwind CSS + Alpine.js
--   **Database**: MySQL
--   **Testing**: Pest PHP
--   **Authentication**: Laravel Breeze + Spatie Permission
-
-## 🤝 Kontribusi
-
-Kontribusi sangat diterima! Silakan buat issue atau pull request.
-
-## 📄 Lisensi
-
-MIT License
-
----
-
-<p align="center">
-  <strong>Dibuat untuk memudahkan pengelolaan sekolah dasar ❤️</strong>
-</p>
-
-## 📚 Teknologi
-
 ### Backend Stack
 
 -   **Framework**: Laravel 12.x
 -   **PHP**: 8.3+
--   **Database**: MySQL
+-   **Database**: MySQL 8.0+
 -   **Authentication**: Laravel Breeze + Spatie Permission
 -   **Testing**: Pest PHP (Unit & Feature tests)
 -   **Architecture**: Clean Architecture (Controller → Service → Repository)
@@ -628,44 +877,162 @@ MIT License
 -   📄 **Modern Pagination**: Custom styled with Tailwind
 -   🌐 **SEO Friendly**: Meta tags & semantic HTML
 
+## 📋 Changelog
+
+### v1.0.0 - Production Ready (2024)
+
+-   **Kalkulator Nilai Otomatis**: Hitung rata-rata dengan bobot yang tepat
+-   **Leger Nilai Digital**: Tabel rekap nilai semua siswa per kelas
+-   **Generator Deskripsi**: Saran narasi rapor otomatis
+-   **Ranking Otomatis**: Tentukan juara kelas dalam hitungan detik
+-   **Absensi Harian & Mapel**: Sistem absensi lengkap
+-   **Arsip Digital**: Backup nilai sebagai arsip sekolah
+-   **Modern UI/UX**: Responsive design dengan Tailwind CSS + Alpine.js
+-   **Clean Architecture**: Controller → Service → Repository pattern
+-   **Comprehensive Testing**: Unit & Feature tests dengan Pest PHP
+-   **Production Deployment**: Ready-to-deploy dengan konfigurasi lengkap
+
+### v0.9.0 - Core Features (2024)
+
+-   Authentication & Authorization (Laravel Breeze + Spatie Permission)
+-   Master Data Management (Tahun Ajaran, Mata Pelajaran, Siswa, Kelas)
+-   Teaching Assignment & Scheduling
+-   Class Student Management
+-   Profile Management dengan upload foto
+
+### v0.8.0 - Foundation (2024)
+
+-   Laravel 12.x setup dengan clean architecture
+-   Database migrations & relationships
+-   Basic CRUD operations
+-   Role-based access control
+-   Responsive UI foundation
+
+## 🔍 Fitur Detail
+
+### 🧮 Kalkulator Nilai Otomatis
+
+-   **Rumus Bobot**: Hitung rata-rata dengan bobot (UH 40% + UTS 30% + UAS 30%)
+-   **Konversi Predikat**: Otomatis konversi angka ke A/B/C/D
+-   **Ranking Otomatis**: Tentukan juara kelas dalam hitungan detik
+-   **Validasi**: Mencegah kesalahan input dan perhitungan
+
+### 📊 Leger Nilai Digital
+
+-   **Tabel Rekap**: Nama siswa ke bawah, mata pelajaran ke samping
+-   **Format Standar**: No, Nama, Nilai per Mapel, Total, Rata-rata, Rank
+-   **Filter Kelas**: Lihat leger per kelas dan tahun ajaran
+-   **Export**: Export tabel ke Excel untuk arsip tambahan
+
+#### 📋 Contoh Tampilan Leger Nilai
+
+| No  | Nama Siswa   | PAI    | PKN    | B.INDO | MTK    | IPA    | IPS    | B.SUNDA | SBK    | Total | Rata-rata | Rank |
+| --- | ------------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------ | ----- | --------- | ---- |
+| 1   | Ahmad Surya  | 85 (B) | 90 (A) | 88 (B) | 95 (A) | 87 (B) | 82 (B) | 90 (A)  | 88 (B) | 705   | 88.1      | 1    |
+| 2   | Siti Aminah  | 90 (A) | 88 (B) | 92 (A) | 78 (C) | 85 (B) | 90 (A) | 85 (B)  | 87 (B) | 695   | 86.9      | 2    |
+| 3   | Budi Santoso | 80 (B) | 85 (B) | 78 (C) | 88 (B) | 82 (B) | 75 (C) | 88 (B)  | 80 (B) | 656   | 82.0      | 3    |
+
+**Keterangan:**
+
+-   Angka dalam kurung adalah predikat otomatis (90-100 = A, 80-89 = B, 70-79 = C, <70 = D)
+-   Total = Jumlah semua nilai
+-   Rata-rata = Total ÷ Jumlah Mata Pelajaran
+-   Rank = Peringkat berdasarkan rata-rata tertinggi
+
+### 📝 Generator Deskripsi Otomatis
+
+-   **Narasi Pintar**: Generate deskripsi berdasarkan nilai akhir
+-   **Template SD**: Sesuai format rapor SD Indonesia
+-   **Copy-Paste Ready**: Siap disalin ke buku rapor manual
+-   **Customizable**: Bisa disesuaikan dengan kebutuhan sekolah
+
+#### 📝 Contoh Generator Deskripsi
+
+**Untuk nilai 95 (A):**
+"Ananda sangat menguasai materi Matematika. Kemampuan ananda dalam menghitung pecahan dan geometri sangat baik. Pertahankan prestasi ini dengan terus berlatih."
+
+**Untuk nilai 82 (B):**
+"Ananda sudah cukup baik dalam memahami materi Matematika. Ananda perlu lebih teliti dalam menghitung dan memahami konsep geometri agar bisa lebih baik lagi."
+
+**Untuk nilai 65 (C):**
+"Ananda perlu bimbingan khusus dalam Matematika terutama dalam konsep pecahan dan geometri. Ananda disarankan untuk lebih banyak berlatih dan bertanya kepada guru jika ada kesulitan."
+
+### 📋 Absensi Harian & Mapel
+
+-   **Absensi Harian**: Input wali kelas (S/I/A) - hemat database
+-   **Absensi Mapel**: Jurnal mengajar per mata pelajaran
+-   **Status Lengkap**: H/S/I/A/B dengan catatan spesifik
+-   **Validasi**: Mencegah duplikasi absen
+
+### 📊 Dashboard Analytics
+
+-   **Real-time Stats**: Statistik kehadiran siswa
+-   **Charts & Graphs**: Visualisasi data dengan ApexCharts
+-   **Wali Kelas Focus**: Dashboard khusus untuk monitoring kelas
+-   **Ranking Siswa**: Peringkat berdasarkan nilai rata-rata
+
 ## 🤝 Kontribusi
 
 Kontribusi sangat diterima! Silakan buat issue atau pull request.
 
+### Panduan Kontribusi
+
+1. Fork repository ini
+2. Buat branch fitur baru (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan Anda (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+### Panduan Development
+
+-   Ikuti PSR-12 coding standards
+-   Tambahkan tests untuk fitur baru
+-   Update dokumentasi jika diperlukan
+-   Pastikan semua tests pass sebelum submit PR
+-   Gunakan conventional commits untuk commit messages
+
+## 🆘 Dukungan & Bantuan
+
+### Masalah Umum
+
+Jika mengalami masalah, cek:
+
+1. [Troubleshooting Guide](#-troubleshooting) di atas
+2. Logs aplikasi di `storage/logs/laravel.log`
+3. Pastikan semua dependencies terinstall dengan benar
+
+### Laporkan Bug
+
+Gunakan GitHub Issues untuk melaporkan bug:
+
+-   Deskripsikan langkah reproduksi
+-   Sertakan error messages dan logs
+-   Spesifikasikan environment (PHP version, OS, dll.)
+
+### Request Fitur
+
+Untuk request fitur baru:
+
+-   Cek apakah fitur sudah ada di [Status Pengembangan](#-status-pengembangan)
+-   Buat issue dengan label "enhancement"
+-   Jelaskan use case dan benefit fitur tersebut
+
+### Kontak Developer
+
+-   **Repository**: [GitHub](https://github.com/Brynnnn12/sistem-akademik-sekolah)
+-   **Issues**: [GitHub Issues](https://github.com/Brynnnn12/sistem-akademik-sekolah/issues)
+
 ## 📄 Lisensi
 
-MIT License
+MIT License - lihat file [LICENSE](LICENSE) untuk detail lebih lanjut.
 
 ---
 
 <p align="center">
-  <strong>Dibuat untuk memudahkan pengelolaan sekolah dasar ❤️</strong>
+  <strong>Dibuat dengan ❤️ untuk memudahkan pengelolaan sekolah dasar</strong>
 </p>
-# #     C h a n g e l o g 
- 
- # # #   v 1 . 0 . 0   -   P r o d u c t i o n   R e a d y   ( 2 0 2 4 ) 
- 
- -     * * C o m p l e t e   A t t e n d a n c e   S y s t e m * * :   P r e s e n s i   m a p e l   d e n g a n   j u r n a l   m e n g a j a r   o t o m a t i s 
- -     * * D a s h b o a r d   A n a l y t i c s * * :   R e a l - t i m e   s t a t i s t i c s   u n t u k   w a l i   k e l a s 
- -     * * M o d e r n   U I / U X * * :   R e s p o n s i v e   d e s i g n   d e n g a n   T a i l w i n d   C S S   +   A l p i n e . j s 
- -     * * C l e a n   A r c h i t e c t u r e * * :   C o n t r o l l e r     S e r v i c e     R e p o s i t o r y   p a t t e r n 
- -     * * C o m p r e h e n s i v e   T e s t i n g * * :   U n i t   &   F e a t u r e   t e s t s   d e n g a n   P e s t   P H P 
- -     * * P r o d u c t i o n   D e p l o y m e n t * * :   R e a d y - t o - d e p l o y   d e n g a n   k o n f i g u r a s i   l e n g k a p 
- 
- # # #   v 0 . 9 . 0   -   C o r e   F e a t u r e s   ( 2 0 2 4 ) 
- 
- -     A u t h e n t i c a t i o n   &   A u t h o r i z a t i o n   ( L a r a v e l   B r e e z e   +   S p a t i e   P e r m i s s i o n ) 
- -     M a s t e r   D a t a   M a n a g e m e n t   ( T a h u n   A j a r a n ,   M a t a   P e l a j a r a n ,   S i s w a ,   K e l a s ) 
- -     T e a c h i n g   A s s i g n m e n t   &   S c h e d u l i n g 
- -     C l a s s   S t u d e n t   M a n a g e m e n t 
- -     P r o f i l e   M a n a g e m e n t   d e n g a n   u p l o a d   f o t o 
- 
- # # #   v 0 . 8 . 0   -   F o u n d a t i o n   ( 2 0 2 4 ) 
- 
- -     L a r a v e l   1 2 . x   s e t u p   d e n g a n   c l e a n   a r c h i t e c t u r e 
- -     D a t a b a s e   m i g r a t i o n s   &   r e l a t i o n s h i p s 
- -     B a s i c   C R U D   o p e r a t i o n s 
- -     R o l e - b a s e d   a c c e s s   c o n t r o l 
- -     R e s p o n s i v e   U I   f o u n d a t i o n 
- 
- 
+
+<p align="center">
+  <a href="#sistem-akademik-sekolah-dasar-sd">Kembali ke Atas</a>
+</p>
+````

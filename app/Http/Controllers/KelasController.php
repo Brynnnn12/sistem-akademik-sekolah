@@ -175,25 +175,40 @@ class KelasController extends Controller
     }
 
     /**
-     * Add siswa to kelas.
+     * Add siswa to kelas (bulk support).
      */
     public function addSiswa(Kelas $kelas, \Illuminate\Http\Request $request): RedirectResponse
     {
         $request->validate([
-            'siswa_id' => 'required|exists:siswas,id',
+            'siswa_id' => 'required|array|min:1',
+            'siswa_id.*' => 'exists:siswas,id',
             'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
         ]);
 
         try {
-            $this->rombelService->assignSiswaToKelas(
+            $results = $this->rombelService->bulkAssignSiswaToKelas(
                 $request->siswa_id,
                 $kelas->id,
                 $request->tahun_ajaran_id
             );
 
-            return redirect()
-                ->back()
-                ->with('success', 'Siswa berhasil ditambahkan ke kelas.');
+            $successCount = count($results['success']);
+            $errorCount = count($results['errors']);
+
+            if ($successCount > 0 && $errorCount === 0) {
+                return redirect()
+                    ->back()
+                    ->with('success', "{$successCount} siswa berhasil ditambahkan ke kelas.");
+            } elseif ($successCount > 0 && $errorCount > 0) {
+                return redirect()
+                    ->back()
+                    ->with('warning', "{$successCount} siswa berhasil ditambahkan, {$errorCount} siswa gagal ditambahkan.")
+                    ->with('bulk_errors', $results['errors']);
+            } else {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Tidak ada siswa yang berhasil ditambahkan.');
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {

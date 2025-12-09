@@ -26,6 +26,10 @@ class StorePenugasanMengajarRequest extends FormRequest
             'kelas_id' => ['required', 'integer', 'exists:kelas,id'],
             'mata_pelajaran_id' => ['required', 'integer', 'exists:mata_pelajarans,id'],
             'tahun_ajaran_id' => ['required', 'integer', 'exists:tahun_ajarans,id'],
+            'jadwal' => ['required', 'array', 'min:1'],
+            'jadwal.*.hari' => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu'],
+            'jadwal.*.jam_mulai' => ['required', 'date_format:H:i'],
+            'jadwal.*.jam_selesai' => ['required', 'date_format:H:i', 'after:jadwal.*.jam_mulai'],
         ];
     }
 
@@ -39,6 +43,10 @@ class StorePenugasanMengajarRequest extends FormRequest
             'kelas_id' => 'kelas',
             'mata_pelajaran_id' => 'mata pelajaran',
             'tahun_ajaran_id' => 'tahun ajaran',
+            'jadwal' => 'jadwal mengajar',
+            'jadwal.*.hari' => 'hari',
+            'jadwal.*.jam_mulai' => 'jam mulai',
+            'jadwal.*.jam_selesai' => 'jam selesai',
         ];
     }
 
@@ -56,6 +64,15 @@ class StorePenugasanMengajarRequest extends FormRequest
             'mata_pelajaran_id.exists' => 'Mata pelajaran yang dipilih tidak valid.',
             'tahun_ajaran_id.required' => 'Tahun ajaran wajib dipilih.',
             'tahun_ajaran_id.exists' => 'Tahun ajaran yang dipilih tidak valid.',
+            'jadwal.required' => 'Jadwal mengajar wajib diisi.',
+            'jadwal.min' => 'Minimal harus ada 1 jadwal mengajar.',
+            'jadwal.*.hari.required' => 'Hari wajib dipilih.',
+            'jadwal.*.hari.in' => 'Hari yang dipilih tidak valid.',
+            'jadwal.*.jam_mulai.required' => 'Jam mulai wajib diisi.',
+            'jadwal.*.jam_mulai.date_format' => 'Format jam mulai tidak valid.',
+            'jadwal.*.jam_selesai.required' => 'Jam selesai wajib diisi.',
+            'jadwal.*.jam_selesai.date_format' => 'Format jam selesai tidak valid.',
+            'jadwal.*.jam_selesai.after' => 'Jam selesai harus setelah jam mulai.',
         ];
     }
 }
