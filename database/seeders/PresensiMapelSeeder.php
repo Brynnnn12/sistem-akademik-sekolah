@@ -61,13 +61,14 @@ class PresensiMapelSeeder extends Seeder
                         $catatan = 'Bolos jam pelajaran';
                     }
 
-                    PresensiMapel::create([
+                    PresensiMapel::firstOrCreate([
                         'siswa_id' => $kelasSiswa->siswa_id,
-                        'kelas_id' => $penugasan->kelas_id,
                         'mata_pelajaran_id' => $penugasan->mata_pelajaran_id,
-                        'guru_id' => $penugasan->guru_id,
                         'tanggal' => $tanggal,
                         'jam_mulai' => '07:00',
+                    ], [
+                        'kelas_id' => $penugasan->kelas_id,
+                        'guru_id' => $penugasan->guru_id,
                         'status' => $status,
                         'materi' => $this->generateMateri($penugasan->mataPelajaran->nama),
                         'catatan' => $catatan,

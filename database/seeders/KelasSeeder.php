@@ -30,5 +30,46 @@ class KelasSeeder extends Seeder
         foreach ($kelasData as $data) {
             \App\Models\Kelas::factory()->create($data);
         }
+
+        // Set wali kelas untuk beberapa kelas
+        $this->setWaliKelas();
+    }
+
+    /**
+     * Set wali kelas untuk beberapa kelas
+     */
+    private function setWaliKelas(): void
+    {
+        $guru = \App\Models\User::whereHas('roles', function ($query) {
+            $query->where('name', 'Guru');
+        })->get();
+
+        if ($guru->isEmpty()) {
+            return;
+        }
+
+        $kelas = \App\Models\Kelas::all();
+
+        // Set wali kelas untuk kelas 1A, 2A, 3A, 4A, 5A, 6A
+        $waliKelasMapping = [
+            '1A' => $guru->first()->id ?? null,
+            '2A' => $guru->skip(1)->first()->id ?? $guru->first()->id,
+            '3A' => $guru->skip(2)->first()->id ?? $guru->first()->id,
+            '4A' => $guru->skip(3)->first()->id ?? $guru->first()->id,
+            '5A' => $guru->skip(4)->first()->id ?? $guru->first()->id,
+            '6A' => $guru->skip(5)->first()->id ?? $guru->first()->id,
+        ];
+
+        foreach ($waliKelasMapping as $namaKelas => $waliId) {
+            if ($waliId) {
+                $kelasItem = $kelas->where('nama', substr($namaKelas, 1, 1))
+                    ->where('tingkat_kelas', (int)substr($namaKelas, 0, 1))
+                    ->first();
+
+                if ($kelasItem) {
+                    $kelasItem->update(['wali_kelas_id' => $waliId]);
+                }
+            }
+        }
     }
 }

@@ -109,7 +109,7 @@
             </div>
         </div>
 
-        @hasanyrole('Admin|KepalaSekolah')
+        @hasanyrole('Admin|Guru|KepalaSekolah')
             <div class="mb-6">
                 <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Proses Akademik</h3>
                 <div class="px-2 space-y-1">
@@ -275,6 +275,24 @@
                 </div>
             </div>
         @endhasanyrole
+
+        @hasrole('Guru')
+            @php
+                $isWaliKelas = \App\Models\Kelas::where('wali_kelas_id', auth()->id())->exists();
+            @endphp
+            @if ($isWaliKelas)
+                <div class="mb-6">
+                    <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Wali Kelas</h3>
+                    <div class="px-2 space-y-1">
+                        <a href="{{ route('promotion.wali-kelas-form') }}" onclick="closeMobileSidebar()"
+                            class="flex items-center p-3 rounded-lg transition-colors {{ request()->routeIs('promotion.wali-kelas-*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                            <i class="fas fa-user-graduate mr-3 w-5 text-center"></i>
+                            <span>Kenaikan Kelas</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+        @endhasrole
 
         <div class="border-t border-blue-700 pt-4 mt-2">
             <h3 class="px-4 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2">Pengaturan</h3>

@@ -116,7 +116,7 @@ class NilaiAkhirController extends Controller
         $rekapData = [];
 
         if ($tahunAjaran) {
-            $rekapData = $this->nilaiAkhirService->getRekapNilaiAkhirKelas($waliKelas->id, $tahunAjaran->id);
+            $rekapData = $this->nilaiAkhirService->getRekapRaporWaliKelas($waliKelas->id, $tahunAjaran->id);
         }
 
         // Ambil data untuk dropdown

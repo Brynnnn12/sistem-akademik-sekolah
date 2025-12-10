@@ -22,7 +22,12 @@ class DatabaseSeeder extends Seeder
             KelasSeeder::class,
             SiswaSeeder::class,
             KelasSiswaSeeder::class,
+            // Data lengkap untuk tahun ajaran 2024/2025
+            TahunAjaran2024_2025Seeder::class,
+            // Data minimal untuk tahun ajaran aktif (2025/2026)
             PenugasanMengajarSeeder::class,
+            KomponenNilaiSeeder::class,
+            // Tidak ada nilai siswa dan presensi untuk tahun ajaran aktif
         ]);
     }
 }

@@ -22,21 +22,23 @@ class RoleSeeder extends Seeder
             $roles = ['Admin', 'Guru', 'KepalaSekolah'];
 
             foreach ($roles as $role) {
-                \Spatie\Permission\Models\Role::create(['name' => $role]);
+                \Spatie\Permission\Models\Role::firstOrCreate(['name' => $role]);
             }
 
             /**
              * membuat user admin dengan profile
              */
-            $admin = User::create([
-                'name' => 'Admin',
+            $admin = User::firstOrCreate([
                 'email' => 'admin@example.com',
+            ], [
+                'name' => 'Admin',
                 'password' => bcrypt('password'),
             ]);
             $admin->assignRole('Admin');
 
-            Profile::create([
+            Profile::firstOrCreate([
                 'user_id' => $admin->id,
+            ], [
                 'nip' => '000000000',
                 'nama' => 'Admin Contoh',
                 'no_hp' => '081000000000',
@@ -48,15 +50,17 @@ class RoleSeeder extends Seeder
             /**
              * membuat user guru dengan profile
              */
-            $guru = User::create([
-                'name' => 'Guru',
+            $guru = User::firstOrCreate([
                 'email' => 'guru@example.com',
+            ], [
+                'name' => 'Guru',
                 'password' => bcrypt('password'),
             ]);
             $guru->assignRole('Guru');
 
-            Profile::create([
+            Profile::firstOrCreate([
                 'user_id' => $guru->id,
+            ], [
                 'nip' => '123456789',
                 'nama' => 'Guru Contoh',
                 'no_hp' => '081234567890',
@@ -68,15 +72,17 @@ class RoleSeeder extends Seeder
             /**
              * membuat user kepala sekolah dengan profile
              */
-            $kepsek = User::create([
-                'name' => 'Kepala Sekolah',
+            $kepsek = User::firstOrCreate([
                 'email' => 'kepsek@example.com',
+            ], [
+                'name' => 'Kepala Sekolah',
                 'password' => bcrypt('password'),
             ]);
             $kepsek->assignRole('KepalaSekolah');
 
-            Profile::create([
+            Profile::firstOrCreate([
                 'user_id' => $kepsek->id,
+            ], [
                 'nip' => '987654321',
                 'nama' => 'Kepala Sekolah Contoh',
                 'no_hp' => '081987654321',

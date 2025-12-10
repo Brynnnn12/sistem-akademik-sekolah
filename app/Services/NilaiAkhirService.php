@@ -9,18 +9,15 @@ use App\Models\Siswa;
 use App\Models\MataPelajaran;
 use App\Models\TahunAjaran;
 use App\Models\KelasSiswa;
+use App\Models\PresensiMapel;
 use App\Repositories\NilaiAkhirRepository;
 use Illuminate\Support\Facades\DB;
 
 class NilaiAkhirService
 {
-    protected $nilaiAkhirRepository;
-
-    public function __construct(NilaiAkhirRepository $nilaiAkhirRepository)
-    {
-        $this->nilaiAkhirRepository = $nilaiAkhirRepository;
-    }
-
+    public function __construct(
+        protected NilaiAkhirRepository $nilaiAkhirRepository
+    ) {}
     /**
      * Generate nilai akhir untuk semua siswa dalam mata pelajaran tertentu
      */
@@ -172,5 +169,150 @@ class NilaiAkhirService
         });
 
         return $rekapData;
+    }
+
+    /**
+     * Get rekap rapor wali kelas - mencakup presensi semua mapel + nilai tugas
+     */
+    public function getRekapRaporWaliKelas($kelasId, $tahunAjaranId)
+    {
+        // Ambil semua siswa di kelas ini
+        $siswaIds = Siswa::whereHas('kelas', function ($query) use ($tahunAjaranId, $kelasId) {
+            $query->where('tahun_ajaran_id', $tahunAjaranId)
+                ->where('kelas_id', $kelasId);
+        })->pluck('id');
+
+        $rekapData = [];
+
+        foreach ($siswaIds as $siswaId) {
+            $siswa = Siswa::with(['kelas' => function ($query) use ($tahunAjaranId, $kelasId) {
+                $query->where('tahun_ajaran_id', $tahunAjaranId)
+                    ->where('kelas_id', $kelasId);
+            }])->find($siswaId);
+
+            // 1. Hitung presensi dari semua mata pelajaran
+            $presensiStats = $this->calculatePresensiSiswa($siswaId, $kelasId, $tahunAjaranId);
+
+            // 2. Hitung nilai tugas/komponen dari semua mata pelajaran
+            $nilaiTugasStats = $this->calculateNilaiTugasSiswa($siswaId, $kelasId, $tahunAjaranId);
+
+            // 3. Hitung nilai akhir rapor (kombinasi presensi + tugas)
+            $nilaiRapor = $this->calculateNilaiRaporAkhir($presensiStats, $nilaiTugasStats);
+
+            $rekapData[] = [
+                'siswa' => $siswa,
+                'presensi' => $presensiStats,
+                'nilai_tugas' => $nilaiTugasStats,
+                'nilai_rapor' => $nilaiRapor,
+                'grade_akhir' => $this->convertToGrade($nilaiRapor),
+                'status' => $nilaiRapor >= 75 ? 'Lulus' : 'Tidak Lulus'
+            ];
+        }
+
+        // Sort by nama siswa
+        usort($rekapData, function ($a, $b) {
+            return strcmp($a['siswa']->nama, $b['siswa']->nama);
+        });
+
+        return $rekapData;
+    }
+
+    /**
+     * Hitung statistik presensi siswa dari semua mata pelajaran
+     */
+    private function calculatePresensiSiswa($siswaId, $kelasId, $tahunAjaranId)
+    {
+        // Ambil semua presensi siswa di kelas ini untuk tahun ajaran ini
+        $presensis = PresensiMapel::where('siswa_id', $siswaId)
+            ->where('kelas_id', $kelasId)
+            ->whereHas('mataPelajaran', function ($query) use ($tahunAjaranId) {
+                $query->whereHas('penugasanMengajar', function ($subQuery) use ($tahunAjaranId) {
+                    $subQuery->where('tahun_ajaran_id', $tahunAjaranId);
+                });
+            })
+            ->get();
+
+        $total = $presensis->count();
+        $hadir = $presensis->where('status', 'H')->count();
+        $sakit = $presensis->where('status', 'S')->count();
+        $izin = $presensis->where('status', 'I')->count();
+        $alpha = $presensis->where('status', 'A')->count();
+
+        // Hitung persentase kehadiran
+        $persentaseKehadiran = $total > 0 ? round(($hadir / $total) * 100, 2) : 0;
+
+        // Konversi persentase ke nilai (0-100)
+        $nilaiPresensi = $persentaseKehadiran;
+
+        return [
+            'total_pertemuan' => $total,
+            'hadir' => $hadir,
+            'sakit' => $sakit,
+            'izin' => $izin,
+            'alpha' => $alpha,
+            'persentase_kehadiran' => $persentaseKehadiran,
+            'nilai_presensi' => $nilaiPresensi
+        ];
+    }
+
+    /**
+     * Hitung statistik nilai tugas siswa dari semua mata pelajaran
+     */
+    private function calculateNilaiTugasSiswa($siswaId, $kelasId, $tahunAjaranId)
+    {
+        // Ambil semua komponen nilai (tugas, UTS, UAS) untuk siswa di kelas ini
+        $komponenNilais = KomponenNilai::whereHas('penugasan_mengajar', function ($query) use ($kelasId, $tahunAjaranId) {
+            $query->where('kelas_id', $kelasId)
+                ->where('tahun_ajaran_id', $tahunAjaranId);
+        })->with(['nilaiSiswas' => function ($query) use ($siswaId) {
+            $query->where('siswa_id', $siswaId);
+        }])->get();
+
+        $totalNilai = 0;
+        $totalBobot = 0;
+        $detailNilai = [];
+
+        foreach ($komponenNilais as $komponen) {
+            $nilaiSiswa = $komponen->nilaiSiswas->first();
+
+            if ($nilaiSiswa && $nilaiSiswa->nilai !== null) {
+                $nilaiWeighted = ($nilaiSiswa->nilai * $komponen->bobot) / 100;
+                $totalNilai += $nilaiWeighted;
+                $totalBobot += $komponen->bobot;
+
+                $detailNilai[] = [
+                    'mata_pelajaran' => $komponen->penugasan_mengajar->mataPelajaran->nama,
+                    'komponen' => $komponen->nama,
+                    'nilai' => $nilaiSiswa->nilai,
+                    'bobot' => $komponen->bobot,
+                    'nilai_weighted' => round($nilaiWeighted, 2)
+                ];
+            }
+        }
+
+        $rataRataTugas = $totalBobot > 0 ? round(($totalNilai / $totalBobot) * 100, 2) : 0;
+
+        return [
+            'detail_nilai' => $detailNilai,
+            'total_komponen' => count($detailNilai),
+            'rata_rata_tugas' => $rataRataTugas
+        ];
+    }
+
+    /**
+     * Hitung nilai rapor akhir (kombinasi presensi + tugas)
+     * Bobot: Presensi 30%, Tugas 70%
+     */
+    private function calculateNilaiRaporAkhir($presensiStats, $nilaiTugasStats)
+    {
+        $bobotPresensi = 30; // 30%
+        $bobotTugas = 70;    // 70%
+
+        $nilaiPresensi = $presensiStats['nilai_presensi'];
+        $nilaiTugas = $nilaiTugasStats['rata_rata_tugas'];
+
+        $nilaiAkhir = (($nilaiPresensi * $bobotPresensi) + ($nilaiTugas * $bobotTugas)) / 100;
+
+        return round($nilaiAkhir, 2);
     }
 }

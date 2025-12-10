@@ -52,7 +52,7 @@ test('informasi profil dapat diperbarui', function () {
 //         ->actingAs($user)
 //         ->from(route('password.edit'))
 //         ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
-//         ->patch(route('password.update'), [
+//         ->patch(route('profile.password.update'), [
 //             'current_password' => 'oldpassword',
 //             'password' => 'newpassword',
 //             'password_confirmation' => 'newpassword',

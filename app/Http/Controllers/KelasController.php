@@ -100,10 +100,10 @@ class KelasController extends Controller
                 ->toArray();
 
             $siswa->attendance_stats = [
-                'hadir' => $attendanceStats['hadir'] ?? 0,
-                'sakit' => $attendanceStats['sakit'] ?? 0,
-                'izin' => $attendanceStats['izin'] ?? 0,
-                'alpha' => $attendanceStats['alpha'] ?? 0,
+                'hadir' => $attendanceStats['H'] ?? 0,
+                'sakit' => $attendanceStats['S'] ?? 0,
+                'izin' => $attendanceStats['I'] ?? 0,
+                'alpha' => $attendanceStats['A'] ?? 0,
                 'total' => array_sum($attendanceStats),
             ];
         });

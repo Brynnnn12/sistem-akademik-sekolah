@@ -46,6 +46,7 @@
                             </h4>
                             <p class="text-sm text-blue-700">Tahun Ajaran: {{ $tahunAjaran->nama }}</p>
                             <p class="text-sm text-blue-600">Total Siswa: {{ count($rekapData) }}</p>
+                            <p class="text-xs text-blue-500 mt-1">Bobot: Presensi 30% + Nilai Tugas 70%</p>
                         </div>
                     </div>
                     <div class="text-right">
@@ -58,7 +59,7 @@
             </div>
 
             <!-- Rekap Table -->
-            <x-ui.table :headers="['No', 'NIS', 'Nama Siswa', 'Detail Nilai', 'Rata-rata', 'Grade', 'Status']" striped hover>
+            <x-ui.table :headers="['No', 'NIS', 'Nama Siswa', 'Presensi', 'Nilai Tugas', 'Nilai Rapor', 'Grade', 'Status']" striped hover>
                 @forelse($rekapData as $index => $data)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -71,15 +72,52 @@
                             <div class="text-sm font-medium text-gray-900">{{ $data['siswa']->nama }}</div>
                         </td>
                         <td class="px-6 py-4">
+                            <div class="text-xs space-y-1">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="text-center">
+                                        <div class="font-medium text-green-600">{{ $data['presensi']['hadir'] }}</div>
+                                        <div class="text-gray-500">Hadir</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-medium text-yellow-600">{{ $data['presensi']['sakit'] }}</div>
+                                        <div class="text-gray-500">Sakit</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-medium text-blue-600">{{ $data['presensi']['izin'] }}</div>
+                                        <div class="text-gray-500">Izin</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-medium text-red-600">{{ $data['presensi']['alpha'] }}</div>
+                                        <div class="text-gray-500">Alpha</div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2 pt-2 border-t">
+                                    <div class="font-bold text-gray-900">
+                                        {{ number_format($data['presensi']['persentase_kehadiran'], 1) }}%</div>
+                                    <div class="text-gray-500">Kehadiran</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
                             <div class="text-xs">
-                                @if ($data['nilai_akhirs']->count() > 0)
-                                    @foreach ($data['nilai_akhirs'] as $nilai)
-                                        <div class="flex justify-between py-1">
-                                            <span class="text-gray-600">{{ $nilai->mataPelajaran->nama }}:</span>
-                                            <span class="font-medium">{{ number_format($nilai->nilai_akhir, 2) }}
-                                                ({{ $nilai->grade }})</span>
-                                        </div>
-                                    @endforeach
+                                @if ($data['nilai_tugas']['total_komponen'] > 0)
+                                    <div class="space-y-1 max-h-20 overflow-y-auto">
+                                        @foreach ($data['nilai_tugas']['detail_nilai'] as $nilai)
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600 truncate"
+                                                    title="{{ $nilai['mata_pelajaran'] }} - {{ $nilai['komponen'] }}">
+                                                    {{ Str::limit($nilai['mata_pelajaran'] . ' - ' . $nilai['komponen'], 20) }}:
+                                                </span>
+                                                <span
+                                                    class="font-medium ml-1">{{ number_format($nilai['nilai'], 1) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="text-center mt-2 pt-2 border-t">
+                                        <div class="font-bold text-gray-900">
+                                            {{ number_format($data['nilai_tugas']['rata_rata_tugas'], 1) }}</div>
+                                        <div class="text-gray-500">Rata-rata</div>
+                                    </div>
                                 @else
                                     <span class="text-gray-500 italic">Belum ada nilai</span>
                                 @endif
@@ -87,7 +125,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span
-                                class="text-sm font-bold text-gray-900">{{ number_format($data['rata_rata'], 2) }}</span>
+                                class="text-sm font-bold text-gray-900">{{ number_format($data['nilai_rapor'], 2) }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @php

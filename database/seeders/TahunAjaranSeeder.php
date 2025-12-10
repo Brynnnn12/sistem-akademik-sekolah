@@ -26,12 +26,12 @@ class TahunAjaranSeeder extends Seeder
             [
                 'nama' => '2025/2026',
                 'semester' => 'ganjil',
-                'aktif' => true, // Tahun ajaran aktif
+                'aktif' => false,
             ],
             [
                 'nama' => '2025/2026',
                 'semester' => 'genap',
-                'aktif' => false,
+                'aktif' => true, // Tahun ajaran aktif (semester genap)
             ],
         ];
 

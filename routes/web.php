@@ -38,8 +38,8 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
         Route::delete('/', 'destroy')->name('profile.destroy');
 
         // Password Specific (Sub-fitur)
-        Route::get('/password', 'editPassword')->name('password.edit');
-        Route::patch('/password', 'updatePassword')->name('password.update');
+        Route::get('/password', 'editPassword')->name('profile.password.edit');
+        Route::patch('/password', 'updatePassword')->name('profile.password.update');
     });
 
     // 3. Tahun Ajaran
@@ -85,6 +85,10 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
         Route::get('/results', 'results')->name('results');
         Route::post('/students', 'getStudentsForPromotion')->name('students');
         Route::post('/promote', 'promote')->name('promote');
+
+        // Wali Kelas Promotion Routes
+        Route::get('/wali-kelas', 'waliKelasPromotionForm')->name('wali-kelas-form');
+        Route::post('/wali-kelas-promote', 'waliKelasPromote')->name('wali-kelas-promote');
     });
 
 

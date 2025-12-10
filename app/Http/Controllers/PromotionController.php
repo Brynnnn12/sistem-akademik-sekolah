@@ -6,21 +6,20 @@ use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
 use App\Services\PromotionService;
+use App\Services\NilaiAkhirService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
 class PromotionController extends Controller
 {
-    protected PromotionService $promotionService;
-
-    public function __construct(PromotionService $promotionService)
-    {
-        $this->promotionService = $promotionService;
-    }
+    public function __construct(
+        protected PromotionService $promotionService,
+        protected NilaiAkhirService $nilaiAkhirService
+    ) {}
 
     /**
-     * Show the promotion form.
+     * Show the promotion form for admin/kepala sekolah.
      */
     public function promotionForm(): View
     {
@@ -28,6 +27,117 @@ class PromotionController extends Controller
         $kelas = Kelas::all();
 
         return view('dashboard.promotion.form', compact('tahunAjarans', 'kelas'));
+    }
+
+    /**
+     * Show promotion form with rapor review for wali kelas.
+     */
+    public function waliKelasPromotionForm(Request $request): View
+    {
+        $this->authorize('waliKelasPromotion', Kelas::class);
+
+        $tahunAjaranId = $request->get('tahun_ajaran_id');
+
+        // Default ke tahun ajaran aktif jika tidak dispecify
+        if (!$tahunAjaranId) {
+            $tahunAjaranAktif = TahunAjaran::where('aktif', true)->first();
+            $tahunAjaranId = $tahunAjaranAktif ? $tahunAjaranAktif->id : null;
+        }
+
+        // Cari kelas yang diwalikan oleh user saat ini
+        $waliKelas = Kelas::where('wali_kelas_id', auth()->id())->first();
+
+        if (!$waliKelas) {
+            abort(403, 'Anda tidak memiliki akses sebagai wali kelas.');
+        }
+
+        $tahunAjaran = TahunAjaran::find($tahunAjaranId);
+        $tahunAjarans = TahunAjaran::all();
+
+        // Get rapor data untuk kelas ini
+        $rekapData = [];
+        if ($tahunAjaran) {
+            $rekapData = $this->nilaiAkhirService->getRekapRaporWaliKelas($waliKelas->id, $tahunAjaran->id);
+        }
+
+        return view('dashboard.promotion.wali-kelas-form', compact(
+            'rekapData',
+            'waliKelas',
+            'tahunAjaran',
+            'tahunAjarans',
+            'tahunAjaranId'
+        ));
+    }
+
+    /**
+     * Process promotion decision by wali kelas.
+     */
+    public function waliKelasPromote(Request $request): RedirectResponse
+    {
+        $this->authorize('waliKelasPromotion', Kelas::class);
+
+        $request->validate([
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+            'kelas_id' => 'required|exists:kelas,id',
+            'promotions' => 'required|array',
+            'promotions.*.siswa_id' => 'required|exists:siswas,id',
+            'promotions.*.decision' => 'required|in:naik,tidak_naik,lulus',
+            'promotions.*.target_kelas_id' => 'nullable|exists:kelas,id',
+        ]);
+
+        $waliKelas = Kelas::where('wali_kelas_id', auth()->id())->first();
+
+        if (!$waliKelas || $waliKelas->id != $request->kelas_id) {
+            abort(403, 'Anda tidak memiliki akses untuk kelas ini.');
+        }
+
+        $tahunAjaranAktif = TahunAjaran::where('aktif', true)->first();
+        if (!$tahunAjaranAktif) {
+            return redirect()->back()->with('error', 'Tidak ada tahun ajaran aktif.');
+        }
+
+        $naikSiswaIds = [];
+        $tidakNaikSiswaIds = [];
+        $lulusSiswaIds = [];
+
+        foreach ($request->promotions as $promotion) {
+            switch ($promotion['decision']) {
+                case 'naik':
+                    if (isset($promotion['target_kelas_id'])) {
+                        $naikSiswaIds[] = $promotion['siswa_id'];
+                        // Store target class for later use
+                        $this->promotionService->promoteStudents(
+                            [$promotion['siswa_id']],
+                            $promotion['target_kelas_id'],
+                            $tahunAjaranAktif->id
+                        );
+                    }
+                    break;
+                case 'tidak_naik':
+                    $tidakNaikSiswaIds[] = $promotion['siswa_id'];
+                    // Siswa tetap di kelas yang sama untuk tahun ajaran baru
+                    break;
+                case 'lulus':
+                    if ($waliKelas->tingkat_kelas === 6) {
+                        $lulusSiswaIds[] = $promotion['siswa_id'];
+                        $this->promotionService->graduateStudents([$promotion['siswa_id']]);
+                    }
+                    break;
+            }
+        }
+
+        $message = '';
+        if (count($naikSiswaIds) > 0) {
+            $message .= count($naikSiswaIds) . ' siswa dinaikkan kelas. ';
+        }
+        if (count($tidakNaikSiswaIds) > 0) {
+            $message .= count($tidakNaikSiswaIds) . ' siswa tidak dinaikkan kelas. ';
+        }
+        if (count($lulusSiswaIds) > 0) {
+            $message .= count($lulusSiswaIds) . ' siswa diluluskan. ';
+        }
+
+        return redirect()->back()->with('success', $message ?: 'Proses kenaikan kelas selesai.');
     }
 
     /**
@@ -103,6 +213,22 @@ class PromotionController extends Controller
         $kelas = Kelas::where('tingkat_kelas', 6)->get();
 
         return view('dashboard.graduation.form', compact('tahunAjarans', 'kelas'));
+    }
+
+    /**
+     * Process graduation for selected students.
+     */
+    public function graduate(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'siswa_ids' => 'required|array',
+            'siswa_ids.*' => 'exists:siswas,id',
+        ]);
+
+        // Graduate the selected students
+        $this->promotionService->graduateStudents($request->siswa_ids);
+
+        return redirect()->back()->with('success', 'Siswa berhasil diluluskan.');
     }
 
     /**

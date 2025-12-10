@@ -12,7 +12,7 @@ class SiswaSeeder extends Seeder
      */
     public function run(): void
     {
-        //pakai factory di model Siswa
-        \App\Models\Siswa::factory()->count(50)->create();
+        // Buat 30 siswa per tingkat kelas (6 tingkat × 30 = 180 siswa total)
+        \App\Models\Siswa::factory()->count(180)->create();
     }
 }

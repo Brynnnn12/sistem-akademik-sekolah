@@ -20,30 +20,27 @@ class PenugasanMengajarSeeder extends Seeder
             return;
         }
 
-        $guru = User::role('Guru')->first();
-        if (!$guru) {
+        $guruList = User::role('Guru')->get();
+        if ($guruList->isEmpty()) {
             $this->command->warn('Tidak ada user dengan role Guru.');
             return;
         }
 
-        $kelas = Kelas::first();
-        if (!$kelas) {
-            $this->command->warn('Tidak ada data kelas.');
+        $kelasList = Kelas::all();
+        $mataPelajaranList = MataPelajaran::all();
+
+        if ($kelasList->isEmpty() || $mataPelajaranList->isEmpty()) {
+            $this->command->warn('Tidak ada data kelas atau mata pelajaran.');
             return;
         }
 
-        $mataPelajaran = MataPelajaran::first();
-        if (!$mataPelajaran) {
-            $this->command->warn('Tidak ada data mata pelajaran.');
-            return;
-        }
+        // Distribusi penugasan mengajar untuk semua guru
+        $guruIndex = 0;
+        foreach ($kelasList as $kelas) {
+            foreach ($mataPelajaranList as $mapel) {
+                // Assign guru secara bergantian
+                $guru = $guruList[$guruIndex % $guruList->count()];
 
-        // Buat beberapa penugasan mengajar
-        $allKelas = Kelas::take(3)->get();
-        $allMapel = MataPelajaran::take(4)->get();
-
-        foreach ($allKelas as $kelas) {
-            foreach ($allMapel->take(2) as $mapel) {
                 PenugasanMengajar::firstOrCreate([
                     'guru_id' => $guru->id,
                     'kelas_id' => $kelas->id,
@@ -52,6 +49,8 @@ class PenugasanMengajarSeeder extends Seeder
                 ]);
 
                 $this->command->info("✓ Penugasan: {$guru->name} - {$mapel->nama} - {$kelas->nama_lengkap}");
+
+                $guruIndex++;
             }
         }
 

@@ -84,4 +84,13 @@ class KelasPolicy
     {
         return $user->hasRole('Admin');
     }
+
+    /**
+     * Determine whether the user can perform wali kelas promotion actions.
+     */
+    public function waliKelasPromotion(User $user): bool
+    {
+        // Only guru can perform wali kelas promotion
+        return $user->hasRole('Guru');
+    }
 }
